@@ -1,0 +1,62 @@
+﻿@{
+var db = Database.Open("Sym_db"); 
+
+}
+ @if(Session["email"]!=null && Request.FilePath=="/Page")
+{
+    <script type="text/javascript">
+        
+    window.location.href = "dashboard_layout";
+   window.history.forward();
+
+</script>
+//Response.Redirect("~/dashboard_Layout");   
+
+}
+else
+{
+
+
+<html>
+    <head>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>
+    CSIR
+    </title>
+  
+@RenderPage("design_boot.cshtml")
+<script src="~/js/jquery-2.js"></script>
+    <link rel="shortcut icon" href="~/images/csir_logo.ico"/>
+    <script type="text/javascript" src="~/js/page.js"></script>
+       
+        <script>document.onkeydown = function(e) {
+        if (e.ctrlKey && 
+            (e.keyCode === 67 || 
+             e.keyCode === 86 || 
+             e.keyCode === 85 || 
+             e.keyCode === 117)) {
+            alert('not allowed');
+            return false;
+        } else {
+            return true;
+        }
+};</script>
+
+    </head> 
+<body> 
+     
+@RenderPage("header.cshtml") <!--HEADER(CONSTANT)-->
+    
+  <!-- Begin page content -->
+   
+@RenderPage("body_data.cshtml")<!--BODY DATA WILL BE CHANGED IN EVERY PAGE ACC. TO CONDITION NOT CONSTANT-->
+  
+@RenderPage("footer.cshtml")<!--FOOTER(CONSTANT)-->
+
+
+   
+    <script type="text/javascript" src="~/js/bootstrap.min.js"></script>
+</body>
+     
+</html>
+}

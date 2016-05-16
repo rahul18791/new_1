@@ -1,0 +1,119 @@
+﻿@{
+var db=Database.Open("Sym_db");
+   
+string f_name=Request["f_name"];
+string m_name=Request["m_name"];
+string l_name=Request["last_name"];
+string full_name=f_name+" "+m_name+" "+l_name;
+//string category=Request["cat_user"];
+//string desg=Request["desig"];
+//string dept=Request["dept"];
+string gender=Request["gender_user"];
+//string dob=Request["dob_user"];
+
+//DateTime MyDateTime = new DateTime();
+//MyDateTime = DateTime.ParseExact(dob, "yyyy-MM-dd",null);
+//String MyString_new = MyDateTime.ToString("dd-MM-yyyy"); 
+
+//string ins_name=Request["ins_name"];
+//string address=Request["address"];
+
+string mobile=Request["mob_user"];
+string email=Request["email"];
+string conf_emil=Request["conf_email"];
+if(email!=conf_emil)
+{
+    Response.Redirect("~/register?er=mail");  
+}
+else
+{ 
+ //db.Execute("INSERT INTO new_det(my_name)Values(@0)",fname);
+
+<!--insert query starts from here-->
+
+/*var sql="SELECT * FROM user_sym_details";
+var data=db.Query(sql);
+<ul>
+@foreach(var row in data)
+{
+    
+<li>@row.Name</li>
+
+}
+
+    </ul>*/
+
+    
+
+
+   //generate a random number
+
+ var r_p = new Random();
+ var randomNumber_p = r_p.Next();
+ var rand_p = r_p.Next(1,1000);
+
+var password=Crypto.Hash(email+"_"+rand_p);
+
+//check if user is registered
+var check_al_reg=db.QuerySingle("SELECT * FROM user_sym_details WHERE email=@0",email);
+if(check_al_reg==null)
+{
+
+// var done = db.Execute("INSERT INTO det(id,Name) VALUES (@i,@full_name)");
+
+
+
+
+var insert=db.Execute("INSERT INTO user_sym_details(email,gender,mobile,my_no,first_name,middle_name,last_name,date_reg)"+
+"VALUES(@0,@1,@2,@3,@4,@5,@6,@7)",email,gender,mobile,rand_p,f_name,m_name,l_name,DateTime.Now);
+
+
+
+
+
+
+//get the last enterered uid of the user
+
+int currentuserid = WebSecurity.GetUserId(email);
+
+
+//send a mail to the user with his login credentials
+System.Net.Mail.MailMessage mail = new System.Net.Mail.MailMessage();
+        mail.To.Add(email);
+        mail.From = new System.Net.Mail.MailAddress("csircx@gmail.com");
+        mail.Subject = "Registration Success";
+
+
+        mail.Body = "Hi, Your registration is succesfull now you can log in with the credentials shown below<br/> <br/>"+
+        "<b>Your Username is :"+email+
+        "<br/><br/>Your Password is :"+email+"_"+rand_p+"</b><br/><br/> "+
+        "Click on this lick to activate :http://192.168.251.74/csir-final.com/act_new_usr?id_act="+currentuserid;
+
+        mail.IsBodyHtml = true;
+        System.Net.Mail.SmtpClient smtp = new System.Net.Mail.SmtpClient();
+        smtp.Host = "smtp.gmail.com"; //Or Your SMTP Server Address
+        smtp.Port = 587;
+        smtp.Credentials = new System.Net.NetworkCredential
+             ("csircx@gmail.com", "passwordiscsircomplex");
+       
+        //Or your Smtp Email ID and Password
+        smtp.EnableSsl = true;
+        smtp.Send(mail);
+
+
+
+<!--insert the details password and other details in the login table-->
+var insert_login=db.Execute("INSERT INTO login_auth(user_type,password,status,uid,priv)VALUES(@0,@1,@2,@3,@4)",2,password,0,currentuserid,0); 
+
+   
+Response.Redirect("~/Page?st=done");
+}
+else
+{
+ Response.Redirect("~/register?status_done=reg_al");   
+}
+        
+
+}
+
+}

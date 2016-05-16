@@ -1,0 +1,23 @@
+﻿@{
+    var db = Database.Open("sym_db");
+    var uid=Request["uid"];
+    string pass_old = Request["old_pass"];
+    string password_chck = Crypto.Hash(pass_old);
+    
+    var check_pass = db.QuerySingle("SELECT password FROM login_auth WHERE password = @0 AND uid=@1", password_chck,uid);
+    if (check_pass == null)
+    {
+
+        <script>
+
+       alert("Old password is wrong");
+       $("#old_pass_user").focus();
+
+        </script>
+
+    }
+
+
+}
+
+

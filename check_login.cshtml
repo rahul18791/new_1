@@ -1,0 +1,38 @@
+﻿@{
+  var db = Database.Open("Sym_db");   
+string email=Request["email_user"];
+string password=Request["password"];  
+
+
+
+
+string password_h=Crypto.Hash(password);
+
+//check details if  exits
+var check="SELECT user_sym_details.uid,login_auth.priv FROM user_sym_details INNER JOIN login_auth ON user_sym_details.uid = login_auth.uid WHERE "+
+        "(user_sym_details.email=@0 and login_auth.password=@1 and login_auth.status=@2)";
+
+var row = db.QuerySingle(check,email,password_h,1);
+
+//string remember="true".AsBool();  
+
+
+
+
+if(row!=null)
+{
+ Session["email"]=email;
+Session["uid"]=row.uid; 
+Session["priv"]= row.priv; 
+Response.Redirect("~/dashboard_Layout"); 
+  
+}
+else
+{
+
+Response.Redirect("~/login?check=no");  
+
+}
+
+}
+

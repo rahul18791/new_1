@@ -1,0 +1,13 @@
+﻿@{
+var db=Database.Open("Sym_db");    
+
+var id_user_fr_sp=Request["user_id_speak"];
+var row_to_del_fr_sp=Request["row_del_speak"];
+
+
+var delete_data=db.Execute("DELETE FROM speaker_details WHERE uid_user=@0 AND row_no=@1",id_user_fr_sp,row_to_del_fr_sp);
+
+
+}
+
+

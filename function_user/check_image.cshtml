@@ -1,0 +1,12 @@
+﻿@{
+    
+   var image=Request.Files["name_image"];
+   var file_name = Path.GetFileName(image.FileName);
+           var path_i_sign = Path.Combine(Server.MapPath("~/Images/"), file_name);
+        image.SaveAs(path_i_sign);
+ 
+<img src="~/images/@file_name" alt="image" height="150px" width="150px">
+ 
+
+}
+

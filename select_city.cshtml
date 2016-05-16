@@ -1,0 +1,30 @@
+﻿@{
+<label for="city">City</label>  
+
+<select class="form-control" name="city">
+
+@{ string city_name=Request["state"]; 
+if(city_name=="Tamil Nadu")
+{
+
+<option>Chennai</option>   
+<option>Tanjavur</option>
+} 
+else
+{
+    
+<option>Jaipur</option>
+<option>Ajmer</option>
+}
+}
+
+ 
+
+</select>    
+}
+
+
+
+
+
+

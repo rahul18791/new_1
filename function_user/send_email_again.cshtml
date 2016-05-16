@@ -1,0 +1,44 @@
+﻿@{
+   var db=Database.Open("Sym_db"); 
+   var email_id_red=Request["user_id_ag"];
+//get details on that email id
+var get_details_email=db.QuerySingle("SELECT * FROM user_sym_details WHERE email=@0",email_id_red);  
+var i=1;
+if(get_details_email==null)
+{
+   i=0;
+   @i;
+    
+}
+else
+{
+@i;
+var email=email_id_red;
+var rand_p=get_details_email.my_no;
+var currentuserid=get_details_email.uid;
+
+System.Net.Mail.MailMessage mail = new System.Net.Mail.MailMessage();
+        mail.To.Add(email);
+        mail.From = new System.Net.Mail.MailAddress("csircx@gmail.com");
+        mail.Subject = "Recovery Mail";
+
+
+        mail.Body = "Hi, Your recovery details are here now you can log in with the credentials shown below<br/> <br/>"+
+        "<b>Your Username is :"+email+
+        "<br/><br/>Your Password is :"+email+"_"+rand_p+"</b><br/><br/> "+
+        "Click on this lick to activate :http://localhost:10220/act_new_usr?id_act="+currentuserid;
+
+        mail.IsBodyHtml = true;
+        System.Net.Mail.SmtpClient smtp = new System.Net.Mail.SmtpClient();
+        smtp.Host = "smtp.gmail.com"; //Or Your SMTP Server Address
+        smtp.Port = 587;
+        smtp.Credentials = new System.Net.NetworkCredential
+             ("csircx@gmail.com", "passwordiscsircomplex");
+       
+        //Or your Smtp Email ID and Password
+        smtp.EnableSsl = true;
+        smtp.Send(mail);
+        }
+  
+}
+

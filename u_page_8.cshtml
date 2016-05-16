@@ -1,0 +1,201 @@
+﻿@{
+    <script type="text/javascript">
+        function my_div_prn() {
+            var printContents = document.getElementById('my_print_final').innerHTML;
+            var originalContents = document.body.innerHTML;
+            document.body.innerHTML = printContents;
+            window.print();
+            document.body.innerHTML = originalContents;
+
+        }
+    </script>
+    var db = Database.Open("Sym_db");
+
+    var file_data = Request.Files["file_value"];
+    var fileName = Path.GetFileName(file_data.FileName);
+
+    if (fileName == "")
+    {
+        Response.Redirect("~/u_page_7?null=do_up_im");
+    }
+    else
+    {
+
+        var path = Path.Combine(Server.MapPath("~/Images/"), fileName);
+        file_data.SaveAs(path);
+
+        var get_details_1 = db.QuerySingle("SELECT sym_details_basic.title,sym_details_basic.soc_name,sym_details_basic.from_date,sym_details_basic.to_date,sym_details_basic.smid,sym_details_major.lab_working_area AS lab_name FROM sym_details_basic INNER JOIN sym_details_major ON sym_details_basic.smid = sym_details_major.sbid WHERE sym_details_basic.spid=@0", Session["uid"]);
+        var id_dele = get_details_1.smid;
+
+
+
+
+        var i = 1;
+
+        var update_final_sym_details = db.Execute("UPDATE user_sym_details SET final_submit_done=@0,sign_final=@1 WHERE uid=@2", i, fileName, Session["uid"]);
+
+        Layout = "~/dashboard.cshtml";
+        Page.Title = "Summary";
+<div class="container" id="my_print_final">
+    <h3 style="text-align:center;text-decoration:underline">SUMMARY</h3>
+<div class="form-group">
+<label>1.&nbspName of the Society/Academic Institution/Organization under whose asuspices the Symposium/Seminar/ Conference/Workshop etc. is proposed to be organized:</label>
+<u>@get_details_1.soc_name</u>
+    </div>
+<div class="form-group">
+<label>2.&nbspTitle/Name of the Symposium/Seminar/Conference/Workshop etc:</label>
+<u>@get_details_1.title</u>
+</div>
+<div class="form-group">
+<label>3.&nbspPeriod of the Symposium/Seminar/Conference/Workshop etc:</label>
+@{
+string s=get_details_1.from_date;
+string[] words = s.Split('-');
+string s_two=get_details_1.to_date;
+string[] words_to=s_two.Split('-');
+
+  }
+<table border="1" style="border-color: #e8e1e1" class="table table-hover">
+<thead>
+<tr>
+<th colspan="3" style="background-color: #808080">FROM</th>
+    
+<th colspan="3" style="background-color: #808080">To</th>
+</tr>
+<tr>
+<th>Date</th><th>Month</th><th>Year</th>
+<th>Date</th><th>Month</th><th>Year</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>@words[2]</td><td>@words[1]</td><td>@words[0]</td>
+<td>@words_to[2]</td><td>@words_to[1]</td><td>@words_to[0]</td>
+
+</tr>    
+</tbody>
+</table>
+
+</div>
+@{var get_dele_details=db.QuerySingle("SELECT * FROM delegate_details WHERE sb_id=@0",id_dele);
+  
+  }
+<div class="form-group">
+<label>4.PI indicate which of the CSIR lab is working in the same area of Conference/ Seminar/Workshop</label>
+    <u>@get_details_1.lab_name</u>
+</div>
+<div class="form-group">
+<label>5.Total Delegates expected to participate:</label>
+&nbsp<u>@get_dele_details.total_delegates</u>&nbspno(s)
+</div>
+@{var get_entries_income=db.QuerySingle("SELECT * FROM income_finance_details_1 WHERE user_id=@0",Session["uid"]);
+  
+
+var add_finance_entries = get_entries_income.ta_da+get_entries_income.stationary+get_entries_income.conf_print+get_entries_income.sec_assist+get_entries_income.proc_pub+get_entries_income.board_lodge;
+  
+ var add_req_entries= get_entries_income.req_ta_da+get_entries_income.req_stationary+get_entries_income.req_conf_print+get_entries_income.req_sec_assist+get_entries_income.req_proc_pub+get_entries_income.req_board_lodge;
+       
+
+ var get_finance_tab_2_details=db.QuerySingle("SELECT * FROM income_finance_details_2 WHERE user_id=@0",Session["uid"]);
+
+var do_data_total_finance=get_finance_tab_2_details.reg_fee+get_finance_tab_2_details.sale_proc_pub+get_finance_tab_2_details.any_other;
+
+  }
+<div class="form-group">
+<label>6.Total anticipated expenditure:</label>
+Rs.&nbsp<u>@add_finance_entries</u>
+</div>
+<div class="form-group">
+<label>7.Total anticipated income :</label>
+Rs.&nbsp<u>@do_data_total_finance</u>
+</div>
+<div class="form-group">
+<label>8.:Grant requested from CSIR:</label>
+Rs.&nbsp<u>@add_req_entries</u>
+</div>
+    
+
+   <!--get names of organizer , executive auth and head so that their sing can be taken-->
+    @{ var get_values_names = db.QuerySingle("SELECT head_ins_details.name,ex_auth_det.name,org_details.name FROM head_ins_details INNER JOIN ex_auth_det ON ex_auth_det.uid_user=head_ins_details.uid INNER JOIN org_details ON org_details.uid_user=head_ins_details.uid WHERE head_ins_details.uid=@0", Session["uid"]);
+           
+       
+           
+           
+           }
+    <div class="form-group">
+
+       <table class="table table-hover" border="1">
+           <thead>
+               <tr>
+                   <th></th>
+                   <th>
+                       Organizer
+                       
+                   </th>
+                   <th>
+                       Executive Authority
+                   </th>
+                   <th>
+                       Head of the Institution
+                   </th>
+                   
+               </tr>
+              
+              
+           </thead>
+           <tbody>
+               <tr>
+                   <td></td>
+                   <td>
+                       @get_values_names[2]
+                   </td>
+                   <td>
+                       @get_values_names[1]
+                   </td>
+                   <td>
+                       @get_values_names[0]
+                   </td>
+
+               </tr>
+               <tr>
+<td><b>Signature</b></td><td></td><td></td><td></td>
+               </tr>
+          
+           </tbody>
+
+       </table>
+        @*<table border="1" class="table table-hover">
+            <thead>
+            <tr>
+            <th>S.No</th><th>Details</th><th colspan="2">Enclosed</th><th colspan="2">Page no of Annexure</th>
+            </tr>
+            <tr><th></th><th></th><th>Yes</th><th>No</th><th>From</th><th>To</th></tr>
+            </thead>
+            <tbody>
+            <tr>
+            <td>i</td><td>In case of a Society- registration Certificate; Memorandum of Assocition; Bylaws; Audited ststement of accounts of the previous year</td><td><input type="radio" name="enclose_det"></td><td><input type="radio" name="enclose_det"></td><td><input type="number" name="date_encl_1_from"></td><td><input type="number" name="date_encl_1_to"></td>
+            </tr>
+            <tr>
+            <td>ii</td><td>Copy of audited Utilization Certificate of the last grant enclosed</td><td><input type="radio" name="enclose_det_audit"></td><td><input type="radio" name="enclose_det_audit"></td><td><input type="number" name="date_encl_2_from"></td><td><input type="number" name="date_encl_2_to"></td>
+            </tr>
+            </tbody>
+            </table>
+        *@
+    </div>
+@*<div class="form-group" style="text-align: center">
+    <label>Signature of Organiser(as uploaded)</label><img src="~/images/@fileName" alt="no image">
+    </div>
+*@
+<hr/>
+    <h3 style="text-align:center;text-decoration:underline">To BE FILLED BY CSIR COMMITTEE EXPERT</h3>
+    <div class="form-group">
+        <label><b>Recpmmendation of expert:Regret/Defered/Rs:_________________________</b></label><br />
+        <label><b>Signature of Expert:____________________________</b></label>
+    </div>
+</div>
+<div style="text-align: center"><button type="button" onclick="my_div_prn();"><img src="~/images/file_prn.ico" alt="print"></button></div>
+}
+}
+
+
+

@@ -1,0 +1,17 @@
+﻿@{
+    var id_user=Request["id_user_email"];
+    var email=Request["email"];
+    var db = Database.Open("Sym_db");
+    //update table
+    var update_table_email = db.Execute("UPDATE user_sym_details SET email=@0 WHERE uid=@1",email,id_user);
+    if(update_table_email==1)
+    {
+        <p style="color:coral">Email-id Updated</p>
+    }
+    else
+    {
+        <p>Error</p>
+    }
+    
+}
+

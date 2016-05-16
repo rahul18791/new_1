@@ -1,0 +1,487 @@
+﻿@{
+    var db=Database.Open("Sym_db");
+    var id_user=Request["id_user"];
+     var my_sm_id=Request["sm_id"];
+ string data_page_to_active=Request["data_to_ad_page"]; 
+ //page 2.............................................
+ if(data_page_to_active=="b")
+ {
+    
+     var get_major_detail=db.QuerySingle("SELECT * FROM sym_details_major WHERE sbid=@0",my_sm_id);
+     
+     <div class="form-group">
+     <label>(1) Breif about the relevance and scientific / technological importance of organizing the Symposium/Semiar/Conference/Workshop etc. in the context of the present day national needs:</label>
+    <textarea class="form-control" disabled >@get_major_detail.brief</textarea> 
+     </div>
+<hr>
+<div class="form-group">
+<label>(2) Last Symposium/Seminar/Conference/Workshop etc. organized by the scientific Society/Academic Institution, 
+what were its recommendations and what follow-up-steps have been taken by the Society/Academic Institution/Organization(Including
+involvement<br> of the Scientist of CSIR Laboratories) in implementing the recommendations and also reason out with appropriate justification
+ why the<br> CSIR should support the present Symposium/Seminar/Conference/Workshop etc
+    </label>
+<textarea disabled class="form-control" rows="6">@get_major_detail.last_sym_detail</textarea>
+</div>
+<hr>
+<div class="form-group">
+<label>(3) CSIR Lab working in the same area</label>
+<input type="text" class="form-control" disabled value="@get_major_detail.lab_working_area">
+</div>
+    <div class="form-group">
+<label>(4) Delegate Details</label>
+        <!--query to bring details of delegates-->
+        @{
+var q_dele_query_show="SELECT * FROM delegate_details INNER JOIN sym_details_basic ON sym_details_basic.smid = delegate_details.sb_id WHERE sym_details_basic.spid=@0";
+var ece_dele_query_show_ad=db.QuerySingle(q_dele_query_show,id_user);
+        }
+       
+            <h4>Total delegates are expected to participate indicating the number of national, foreign delegates, reasearch students etc.</h4>
+        <table>
+             <tr><td>Total Delagates:</td><td><input type="number" name="total_delegates" id="tot_d" readonly="" value="@ece_dele_query_show_ad.total_delegates" /></td></tr>
+               <tr><td>National Delagates:</td><td><input type="number" name="national_delegates" readonly id="nat_d" value="@ece_dele_query_show_ad.national_delegates"/></td></tr>
+              <tr><td>Foreign Delagates:</td><td><input type="number" name="foreign_delegates" readonly id="for_d" value="@ece_dele_query_show_ad.foreign_delegates" /></td></tr>
+               <tr><td>Reasearch Students:</td><td><input type="number" name="research_students" readonly id="rs_st" value="@ece_dele_query_show_ad.research_stu" /></td></tr>
+               <tr><td>Any Others:</td><td><input type="number" name="any_others" id="any_othr" readonly value="@ece_dele_query_show_ad.any_others"/></td></tr>
+               <tr><td>How many Delegates would read papers:</td><td><input type="number" readonly id="dele_papers" value="@ece_dele_query_show_ad.dele_read_papers"/></td></tr>
+               <tr><td>How many Delegates are being offered TA/DA:</td><td><input type="number" readonly id="dele_ta_da" value="@ece_dele_query_show_ad.dele_offr_ta_da"/></td></tr>
+
+
+            </table>
+        </div>
+    <h4>(5) Proceeding details</h4>
+    <div class="form-group">
+        
+        <label>Will the Proceeding be published:?</label>
+        @{var out_proc_val = "SELECT * FROM proc_details INNER JOIN sym_details_basic ON sym_details_basic.smid = proc_details.sb_id WHERE sym_details_basic.spid=@0";
+         
+        var exe_proc_query_admin = db.QuerySingle(out_proc_val,id_user);
+        if(Convert.ToInt32(exe_proc_query_admin.proc_pub)==1)
+        {
+         <span style="text-decoration:underline;color:green">Yes</span>
+          <div class="form-group">
+              <label>Copies Expected to be Published:</label>
+              <span style="text-decoration:underline">@exe_proc_query_admin.copies_exp_pub</span>
+
+          </div>
+            if (Convert.ToInt32(exe_proc_query_admin.proc_priced) == 1)
+            {
+                <div class="form-group">
+                    <label>Will the Proceedings be priced?</label>
+                    <span style="text-decoration:underline;color:green">Yes</span>
+
+                </div>
+    <div class="form-group">
+        <label>Approximate price to be charged</label>
+        <span style="text-decoration:underline">@exe_proc_query_admin.approx_price</span>
+
+    </div>
+            }
+        }
+        else
+        {
+            <span style="text-decoration:underline;color:red">No</span>
+        }
+
+}
+
+
+    </div>
+ }
+ //page 3..............................................................
+ if(data_page_to_active=="c")
+ {
+    var get_csir_labs="SELECT * FROM csir_lab_details WHERE uid_user=@0";
+    <div class="form-group">
+    <label>(1) Various CSIR Lab approached for co-sponsorship or for participation in the Symposium/seminar/Conference/Workshop etc If so, provide the names of such laboratories /Institutes along with detrails of the different technical sessions</label>
+   <table class="table table-hover">
+       <thead>
+       <tr>
+       <td>S.no</td><td>Name of Laboratory</td><td>Technical Session</td>
+       </tr>
+       </thead>
+       <tbody>
+         @foreach(var prn_row in db.Query(get_csir_labs,id_user))
+    {
+        <tr>
+        <td>
+        @prn_row.row_no
+        </td>
+
+<td>
+@prn_row.lab
+</td>
+
+<td>
+@prn_row.tech_session
+</td>
+        
+        </tr>
+       
+    }
+           </tbody>
+     </table> 
+    </div> 
+
+
+<hr>
+
+
+var get_csir_part_scien="SELECT * FROM part_scien_csir_details WHERE uid_user=@0";
+    <div class="form-group">
+    <label>(2) Name of the CSIR scientists who will be partcipating</label>
+   <table class="table table-hover">
+       <thead>
+       <tr>
+       <td>S.no</td><td>Name of Scientists</td><td>Name of the Laboratory</td>
+       </tr>
+       </thead>
+       <tbody>
+         @foreach(var prn_row_scien in db.Query(get_csir_part_scien,id_user))
+    {
+        <tr>
+        <td>
+        @prn_row_scien.row_no
+        </td>
+
+<td>
+@prn_row_scien.name
+</td>
+
+<td>
+@prn_row_scien.name_lab
+</td>
+        
+        </tr>
+       
+    }
+           </tbody>
+     </table> 
+    </div>
+    <hr />
+    //get speaker details from speaker_details
+    var get_speaker_details="SELECT * FROM speaker_details WHERE uid_user=@0";
+    <div class="form-group">
+        <label>(3) Names of the principal speaker(s) delivering keynote addresses of various technical sessions</label>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <td>S.no</td>
+                    <td>Title</td>
+                    <td>Speaker Name</td>
+                    <td>Organisation</td>
+                    <td>Technical Session</td>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var sp_details in db.Query(get_speaker_details, id_user))
+                {
+                    <tr>
+                        <td>@sp_details.row_no</td>
+                        <td>@sp_details.title</td>
+                        <td>@sp_details.name</td>
+                        <td>@sp_details.organisation</td>
+                        <td>@sp_details.tech_session</td>
+
+                    </tr>
+
+                }
+
+                </tbody>
+            </table>
+        </div>
+    <hr />
+    //get sponsorers details
+    var get_spon_details_table="SELECT * FROM spon_details WHERE uid_user=@0";
+    <div class="form-group">
+        <label>(4) Details of other R & D Organizations/Other agencies who have been approached for sponsoring the proposed activity:</label>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <td>S.no</td>
+                    <td>Name</td>
+                    <td>Grant Requested(Rs.)</td>
+                    <td>Grant Received(Rs.)</td>
+                    <td>Grant Expected(Rs.)</td>
+                    <td>Items for which grants have been requested</td>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var spon_details_tb in db.Query(get_spon_details_table,id_user))
+                {
+                <tr>
+                    <td>@spon_details_tb.row_no</td>
+                    <td>@spon_details_tb.name</td>
+                    <td>@spon_details_tb.grant_rq</td>
+                    <td>@spon_details_tb.grant_rcv</td>
+                    <td>@spon_details_tb.grant_exp</td>
+                    <td>@spon_details_tb.items</td>
+
+                </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+
+ }
+ //page 4............................................................................................
+ if (data_page_to_active == "d")
+ {
+     //get the entries from the table
+       var get_entries_income = db.QuerySingle("SELECT * FROM income_finance_details_1 WHERE user_id=@0", id_user);
+
+       var add_finance_entries = get_entries_income.ta_da + get_entries_income.stationary + get_entries_income.conf_print + get_entries_income.sec_assist + get_entries_income.proc_pub + get_entries_income.board_lodge;
+
+       var add_req_entries = get_entries_income.req_ta_da + get_entries_income.req_stationary + get_entries_income.req_conf_print + get_entries_income.req_sec_assist + get_entries_income.req_proc_pub + get_entries_income.req_board_lodge;
+
+      <table class="table table-hover" border="1">
+          <thead>
+              <tr>
+                  <th colspan="3" style="background-color: #808080">Total anticipated expenditure under the following heads:</th>
+                  <th colspan="2" style="background-color: #808080">Estimated Head-wise Grant requested from CSIR</th>
+              </tr>
+              <tr>
+                  <th>
+                      S.no
+                  </th>
+                  <th>
+                      Budget Head
+                  </th>
+                  <th>
+                      Amount(Rs.)
+                  </th>
+                  <th>Amount(Rs.)</th>
+              </tr>
+          </thead>
+          <tbody>
+              @if (get_entries_income != null)
+              {
+
+                  <tr>
+                      <td>(i)</td>
+                      <td>TA/DA</td>
+                      <td><input type="number" id="exp_ta_da" readonly name="exp_ta_da" min="0" value="@get_entries_income.ta_da"></td>
+                      <td><input type="number" id="req_ta_da" readonly name="req_ta_da" min="0" value="@get_entries_income.req_ta_da" ></td>
+
+                  </tr>
+                  <tr>
+                      <td>(ii)</td>
+                      <td>Pre-Conference printing(announcements,abstracts etc.)</td>
+                      <td><input type="number" id="exp_prin_rs" readonly name="exp_prin_rs" min="0" value="@get_entries_income.conf_print"></td>
+                      <td><input type="number" id="req_prin_rs" readonly name="req_prin_rs" min="0" value="@get_entries_income.req_conf_print"></td>
+
+                  </tr>
+                  <tr>
+                      <td>(iii)</td>
+                      <td>Stationary</td>
+                      <td><input type="number" id="exp_st_rs" readonly name="exp_st_rs" min="0" value="@get_entries_income.stationary"></td>
+                      <td><input type="number" id="req_st_rs" readonly name="req_st_rs" min="0" value="@get_entries_income.req_stationary"></td>
+
+                  </tr>
+                  <tr>
+                      <td>(iv)</td>
+                      <td>Secretarial Assistance</td>
+                      <td><input type="number" id="exp_sec_rs" readonly name="exp_sec_rs" min="0" value="@get_entries_income.sec_assist"><span id="show_tick_exp_3"></span></td>
+                      <td><input type="number" id="req_sec_rs" readonly name="req_sec_rs" min="0" value="@get_entries_income.req_sec_assist"><span id="show_tick_req_3"></span></td>
+
+                  </tr>
+                  <tr>
+
+                      <td>(v)</td>
+                      <td>Estimated expenditure on Publication of proceedings</td>
+                      <td><input type="number" id="exp_pub_rs" readonly name="exp_pub_rs" min="0" value="@get_entries_income.proc_pub"><span id="show_tick_exp_4"></span></td>
+                      <td><input type="number" id="req_pub_rs" readonly name="req_pub_rs" min="0" value="@get_entries_income.req_proc_pub"><span id="show_tick_req_4"></span></td>
+
+                  </tr>
+                  <tr>
+                      <td>(vi)</td>
+                      <td>Boarding and Lodging of delegates</td>
+                      <td><input type="number" id="exp_board_rs" readonly name="exp_board_rs" min="0" value="@get_entries_income.board_lodge"><span id="show_tick_exp_5"></span></td>
+                      <td><input type="number" id="req_board_rs" readonly name="req_board_rs" min="0" value="@get_entries_income.req_board_lodge"><span id="show_tick_req_5"></span></td>
+
+                  </tr>
+
+
+              }
+              else
+              {
+                  <tr>
+                      <td>(i)</td>
+                      <td>TA/DA</td>
+                      <td><input type="number" id="exp_ta_da" readonly name="exp_ta_da" min="0"><span id="show_tick_exp_0"></span></td>
+                      <td><input type="number" id="req_ta_da" readonly name="req_ta_da" min="0"><span id="show_tick_req_0"></span></td>
+
+                  </tr>
+                  <tr>
+                      <td>(ii)</td>
+                      <td>Pre-Conference printing(announcements,abstracts etc.)</td>
+                      <td><input type="number" id="exp_prin_rs" readonly name="exp_prin_rs" min="0" ><span id="show_tick_exp_1"></span></td>
+                      <td><input type="number" id="req_prin_rs" readonly name="req_prin_rs" min="0"><span id="show_tick_req_1"></span></td>
+
+                  </tr>
+                  <tr>
+                      <td>(iii)</td>
+                      <td>Stationary</td>
+                      <td><input type="number" id="exp_st_rs" readonly name="exp_st_rs" min="0"><span id="show_tick_exp_2"></span></td>
+                      <td><input type="number" id="req_st_rs" readonly name="req_st_rs" min="0"><span id="show_tick_req_2"></span></td>
+
+                  </tr>
+                  <tr>
+                      <td>(iv)</td>
+                      <td>Secretarial Assistance</td>
+                      <td><input type="number" id="exp_sec_rs" readonly name="exp_sec_rs" min="0"><span id="show_tick_exp_3"></span></td>
+                      <td><input type="number" id="req_sec_rs" readonly name="req_sec_rs" min="0"><span id="show_tick_req_3"></span></td>
+
+                  </tr>
+                  <tr>
+
+                      <td>(v)</td>
+                      <td>Estimated expenditure on Publication of proceedings</td>
+                      <td><input type="number" id="exp_pub_rs" readonly name="exp_pub_rs" min="0"><span id="show_tick_exp_4"></span></td>
+                      <td><input type="number" id="req_pub_rs" readonly name="req_pub_rs" min="0"><span id="show_tick_req_4"></span></td>
+
+                  </tr>
+                  <tr>
+                      <td>(vi)</td>
+                      <td>Boarding and Lodging of delegates</td>
+                      <td><input type="number" id="exp_board_rs" readonly name="exp_board_rs" min="0"><span id="show_tick_exp_5"></span></td>
+                      <td><input type="number" id="req_board_rs" readonly name="req_board_rs" min="0"><span id="show_tick_req_5"></span></td>
+
+                  </tr>
+
+              }
+
+              <tr>
+                  <td>(vii)</td>
+                  <td style="color: #610a0a"><b>Total(i-vi)</b></td>
+                  <td><input type="number" readonly="" id="first_col_val" value="@add_finance_entries"></td>
+                  <td><input type="number" readonly="" id="second_col_val" value="@add_req_entries"></td>
+
+              </tr>
+          </tbody>
+      </table>
+
+
+
+      <hr>
+
+              var get_finance_tab_2_details = db.QuerySingle("SELECT * FROM income_finance_details_2 WHERE user_id=@0",id_user);
+
+              var do_data_total_finance = get_finance_tab_2_details.reg_fee + get_finance_tab_2_details.sale_proc_pub + get_finance_tab_2_details.any_other;
+
+              <table class="table table-hover">
+                  <thead>
+                      <tr>
+                          <th colspan="3" style="background-color: #808080">
+                              Total anticipated income out of the following
+                          </th>
+                      </tr>
+                      <tr>
+                          <th>
+                              S.No
+                          </th>
+                          <th>
+                              Title
+                          </th>
+                          <th>
+                              Amount(Rs.)
+                          </th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      @if (get_finance_tab_2_details != null)
+                      {
+                          <tr>
+
+                              <td>(i)</td>
+                              <td>Registration fee of the delegates</td>
+                              <td><input type="number" id="reg_fee" readonly name="reg_fee" min="0" value="@get_finance_tab_2_details.reg_fee"><span id="finance_tick_1"></span></td>
+                          </tr>
+                          <tr>
+                              <td>(ii)</td>
+                              <td>Sale of proceedings to be published</td>
+                              <td><input type="number" readonly id="sale_proc_pub" name="sale_proc_pub" min="0" value="@get_finance_tab_2_details.sale_proc_pub"><span id="finance_tick_2"></span></td>
+                          </tr>
+                          <tr>
+                              <td>(iii)</td>
+                              <td>Any other income / grant from your institute / other Organization</td>
+                              <td><input type="number" readonly id="other_income" name="other_income" min="0"  value="@get_finance_tab_2_details.any_other"><span id="finance_tick_3"></span></td>
+                          </tr>
+                      }
+                      else
+                      {
+                          <tr>
+
+                              <td>(i)</td>
+                              <td>Registration fee of the delegates</td>
+                              <td><input type="number" readonly id="reg_fee" name="reg_fee" min="0"><span id="finance_tick_1"></span></td>
+                          </tr>
+                          <tr>
+                              <td>(ii)</td>
+                              <td>Sale of proceedings to be published</td>
+                              <td><input type="number" readonly id="sale_proc_pub" name="sale_proc_pub" min="0"><span id="finance_tick_2"></span></td>
+                          </tr>
+                          <tr>
+                              <td>(iii)</td>
+                              <td>Any other income / grant from your institute / other Organization</td>
+                              <td><input type="number" readonly id="other_income" name="other_income" min="0"><span id="finance_tick_3"></span></td>
+                          </tr>
+                      }
+
+                      <tr>
+                          <td>(iv)</td>
+                          <td style="color: #610a0a"><b>Total(i-iii)</b></td>
+                          <td><input type="text" readonly="" id="tot_finance_2" value="@do_data_total_finance"></td>
+                      </tr>
+                  </tbody>
+              </table>
+
+
+                      //check if amount is sanctioned or not
+
+                      var check_if_sanc = db.QuerySingle("SELECT amount FROM app_sanc WHERE uid=@0", id_user);
+                      var check_if_deff = db.QuerySingle("SELECT reason,date_time FROM app_deff WHERE uid=@0", id_user);
+                      var check_if_reg = db.QuerySingle("SELECT date_time FROM app_regret WHERE uid=@0", id_user);
+                    <div style="width:1400px">
+                        @if(check_if_sanc.amount!=null)
+                        {
+                        <h3>Amount is sanctioned</h3>
+                           
+                        }
+                        else {
+                        <div id="show_text_amount_sanc" style="float:left;width:500px">
+                            <button class="btn btn-primary" onclick="enter_amount_sanc(@id_user)">Sanction requested grant?</button>
+                        </div>
+    <div id="show_text_amount_deff" style="float:left;width:400px">
+        @*check for deffered*@
+        @if (check_if_deff.reason != null)
+        {
+            <h4 style="color:orangered">Application is Deffered on @check_if_deff.date_time</h4>
+        }
+        else
+        {
+
+            <button class="btn btn-warning" onclick="show_reasn_def(@id_user)">Deferrer?</button>
+
+        }
+    </div>
+
+    @*check for regret*@
+    <div id="show_text_amount_reg" style="float:left;width:400px">
+        @if (check_if_reg.date_time!= null)
+        {
+<h4 style="color:red">Application regretted</h4>
+        }
+        else
+        {
+            <button class="btn btn-danger" onclick="show_reas_reg(@id_user)">Regret?</button>
+        }
+
+       
+    </div>
+                        }
+                      
+                    </div>
+ }
+
+}
+

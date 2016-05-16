@@ -1,0 +1,13 @@
+﻿@{
+var db=Database.Open("Sym_db");    
+
+var id_user=Request["user_id"];
+var row_to_del=Request["row_del"];
+
+
+var delete_data=db.Execute("DELETE FROM spon_details WHERE uid_user=@0 AND row_no=@1",id_user,row_to_del);
+
+
+}
+
+

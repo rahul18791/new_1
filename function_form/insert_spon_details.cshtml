@@ -1,0 +1,51 @@
+﻿@{
+var db=Database.Open("Sym_db");
+//no of rows that are need to be added in the table
+int no_rows_sp=int.Parse(Request["rec_spon_details"]);    
+
+
+
+
+
+
+//insert the details via for loop
+for(var i=1;i<=no_rows_sp;i++)
+{
+    
+string name_spon_i=Request["name_spon_"+i];
+var grant_req_i=Request["grant_rq_"+i];
+var grant_rec_i=Request["grant_rc_"+i];
+var grant_exp_i=Request["grant_exp_"+i];
+var items_i=Request["items_grant_"+i];
+
+
+       
+
+var check_data_prs_sp=db.QuerySingle("SELECT * FROM spon_details WHERE uid_user=@0 AND row_no=@1",Session["uid"],i);
+if(check_data_prs_sp!=null)
+{
+  //update
+   var update_pres_val_sp=db.Execute("UPDATE spon_details SET name=@0,grant_rq=@1,grant_rcv=@2,grant_exp=@3,items=@4 WHERE uid_user=@5 AND row_no=@6",name_spon_i,grant_req_i,grant_rec_i,grant_exp_i,items_i,Session["uid"],i);   
+}
+
+   else
+   {
+       //insert
+    var insert_colab_sp=db.Execute("INSERT INTO spon_details(name,grant_rq,grant_rcv,grant_exp,items,uid_user,row_no) VALUES(@0,@1,@2,@3,@4,@5,@6)",name_spon_i,grant_req_i,grant_rec_i,grant_exp_i,items_i,Session["uid"],i);
+
+     
+   }    
+
+
+    
+    
+    
+
+    
+}
+Response.Redirect("~/u_page_4");
+ //<form action="~/function_form/update_rec_page_4" method="post">    
+
+}
+
+

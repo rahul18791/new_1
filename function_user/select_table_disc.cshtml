@@ -1,0 +1,42 @@
+﻿@{
+  var db=Database.Open("Sym_db");  
+var id_disc=Request["disc_id"];
+//get data acc. to id
+var get_app_data_1="SELECT sym_details_basic.soc_name,sym_details_basic.smid,discipline_all.name_d,discipline_all.d_id,sym_details_basic.from_date,sym_details_basic.to_date FROM sym_details_basic INNER JOIN discipline_all ON discipline_all.d_id = sym_details_basic.disc_id WHERE sym_details_basic.disc_id=@0";    
+
+<table class="table table-bordered" id="table_acc_disc_data">
+    <thead>
+    <tr>
+        <th>
+        Unique Id(acc. to discipline)(sym/unique id/discpline id) 
+        </th>
+    <th>
+    Society/Institution/Organization name
+    </th>    
+        <th>
+        Discipline
+        </th>
+        <th>
+        From
+        </th>
+        <th>
+        To
+        </th>
+    </tr>  
+
+    </thead>
+      <tbody>
+@foreach(var row_admin_show_1 in db.Query(get_app_data_1,id_disc))
+{
+      <tr>
+      <td style="text-align: center"><b><a style="cursor: pointer" href="~/show_user_det?smid=@row_admin_show_1.smid">Sym/@row_admin_show_1.smid/@row_admin_show_1.d_id</a></b></td> 
+          <td>@row_admin_show_1.soc_name</td>
+          <td>@row_admin_show_1.name_d</td>
+          <td>@row_admin_show_1.from_date</td>
+          <td>@row_admin_show_1.to_date</td>   
+      </tr>
+}
+      </tbody>
+  </table>
+}
+

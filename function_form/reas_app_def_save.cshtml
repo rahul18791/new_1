@@ -1,0 +1,13 @@
+﻿@{
+    var db = Database.Open("Sym_db");
+    //get the id and the reason
+    var get_id_user=Request["id_user_def"];
+    string reas = Request["reas_def"];  
+    //update the row
+    var update_deff_table = db.Execute("UPDATE app_deff SET reason=@0,date_time=@1 WHERE uid=@2",reas,DateTime.Now,get_id_user);
+    if(update_deff_table!=null)
+    {
+        <h4 style="color:orangered">Application is Deffered</h4>
+        
+    }
+}

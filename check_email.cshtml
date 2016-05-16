@@ -1,0 +1,18 @@
+﻿@{
+ var db = Database.Open("Sym_db");  
+string email=Request["email"];
+var check="SELECT email FROM user_sym_details WHERE email = @0";
+var my_q=db.QuerySingle(check,email);
+if(my_q==null)
+{
+    <script>
+
+       alert("Wrong email id");
+        $("#exampleInputEmail3").focus();
+      
+    </script>
+
+}
+    
+}
+

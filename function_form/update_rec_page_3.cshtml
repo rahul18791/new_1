@@ -1,0 +1,47 @@
+﻿@{
+ var db=Database.Open("Sym_db");   
+ string name=Request["uc_name_user"];
+ string desg=Request["uc_desg_user"];
+ string dept=Request["uc_dept_user"];
+ string ins_name=Request["uc_ins_user"];
+ string address=Request["uc_address_user"];
+ string city=Request["uc_city_user"];
+ string state=Request["uc_state_user"];
+ var pin=Request["uc_pin_user"];
+ var contact=Request["uc_contact_user"];
+ var mobile=Request["uc_mob_user"];
+ string email=Request["uc_email_user"];
+ var uid_fr_uc=Session["uid"];
+ var gen_title=Request["gen_title"];
+
+//check if the details are present or not if present than update else insert
+
+var check_data_pre=db.QuerySingle("SELECT * FROM u_c_details WHERE uid_user=@0",uid_fr_uc);
+if(check_data_pre==null)
+{
+
+ //insert the details in u_c details
+ var ins_uc_details=db.Execute("INSERT INTO u_c_details (name,dept,desg,ins_name,address,city,state,pin_code,mobile,phone,email_id,uid_user)"
+ +" VALUES(@0,@1,@2,@3,@4,@5,@6,@7,@8,@9,@10,@11)",name,dept,desg,ins_name,address,city,state,pin,mobile,contact,email,uid_fr_uc);
+
+ }
+ else
+ {
+     //update the value earlier inserted
+
+var update_uc_details=db.Execute("UPDATE u_c_details SET name=@0,dept=@1,desg=@2,ins_name=@3,address=@4,city=@5,state=@6,pin_code=@7,mobile=@8,phone=@9,email_id=@10,gender=@11 WHERE uid_user=@12",name,dept,desg,ins_name,address,city,state,pin,mobile,contact,email,gen_title,uid_fr_uc);
+
+ }
+
+ 
+ 
+     Response.Redirect("~/u_page_3");
+
+ 
+
+
+
+    
+}
+
+

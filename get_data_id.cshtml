@@ -1,0 +1,30 @@
+﻿@{
+   var db=Database.Open("Sym_db"); 
+var id_usr_app=Request["id_app_user"]; 
+var do_details_id="SELECT * FROM user_sym_details WHERE uid = @0";
+var exe_id_det=db.QuerySingle(do_details_id,id_usr_app);
+
+string f_name=exe_id_det.first_name;
+string m_name=exe_id_det.middle_name;
+string l_name=exe_id_det.last_name;
+string full_name=f_name+" "+m_name+" "+l_name;
+string city=exe_id_det.city; 
+string state=exe_id_det.state;
+var pin_code=exe_id_det.pin_code;
+var phone=exe_id_det.phone;
+var mobile=exe_id_det.mobile;
+string email=exe_id_det.email;
+
+<input type="text" name="name_com_user"  class="form-control" disabled value='@full_name'>
+   <input type="text" name="desg_com_user"  class="form-control" placeholder="Desgination" required>
+  <input type="text" name="dept_com_user"  class="form-control" placeholder="Department(if any)">
+   <textarea class="form-control" rows="3" name="address" placeholder="Address For Communication" required></textarea>
+   <input type="text" name="city_com_user"  class="form-control" disabled value='@city'>
+   <input type="text" name="state_com_user"  class="form-control" disabled value='@state'>
+   <input type="text" name="pin_com_user"  class="form-control" disabled value='@pin_code'>
+   <input type="text" name="contact_com_user"  class="form-control" disabled value='@phone'>
+   <input type="text" name="mob_com_user"  class="form-control" disabled value='@mobile'>
+    <input type="text" name="email_com_user"  class="form-control" disabled value='@email'> 
+
+}
+

@@ -1,0 +1,13 @@
+﻿@{
+var db=Database.Open("Sym_db");    
+
+var id_user=Request["user_id"];
+var row_to_del=Request["row_del"];
+
+var i=1;
+var delete_data_tech=db.Execute("DELETE FROM tech_session_details WHERE uid_user=@0 AND row_no=@1",id_user,row_to_del);
+@i;
+
+}
+
+

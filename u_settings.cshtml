@@ -1,0 +1,69 @@
+﻿@{
+ Layout="~/dashboard.cshtml";
+Page.Title="Settings";
+var uid = Session["uid"]; 
+ 
+
+}
+
+
+<div class="container-fluid" style="margin-top:50px">
+    <div style="float:left"><button type="button" onclick="window.location.href='dashboard_Layout'">Go back</button></div>
+    <h4 style="text-align:center">Click on the following links below and follow the steps</h4>
+    <div style="background-color: #BFC8CE;padding:5px;border:solid 1px #869ca9;cursor:pointer" id="form_div" onclick="open_form_pass()">
+        <strong>Change Password</strong>
+        </div>
+    <div id="change_pass_form" style="display:none;padding:5px">
+        <form class="form-horizontal">
+            <span id="er_pass"></span>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Old Password:</label>
+                <div class="col-sm-10">
+                    <input type="password" name="old_pass_user" id="old_pass_user"  onblur="check_old_pass(this.value,@uid);">
+                </div>
+                <span class="er_old_p"></span>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">New Password:</label>
+                <div class="col-sm-10">
+                    <input type="password" name="new_pass_user" id="new_pass_user">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Confirm Password:</label>
+                <div class="col-sm-10">
+                    <input type="password" name="conf_pass_user" id="conf_pass_user">
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button type="button" class="btn btn-default" onclick="change_old_password(@uid)">Submit</button>
+                    </div></div>
+        </form>
+    </div>
+    <div style="background-color: #469AC2;padding:5px;border:solid 1px #869ca9;cursor:pointer" onclick="change_email_id()">
+       <strong>Change Email-id</strong>
+    </div>
+    <div id="email_id_change" style="display:none;background-color:ButtonFace;border:1px solid #281515;padding:5px">
+
+    <form class="form-horizontal">
+        <div class="form-group">
+            <label class="col-sm-2 control-label">Enter New Email-id</label>
+            <input type="email" name="email_change_new" id="email_change" placeholder="Email-id" />
+            </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">Confirm Email-id</label>
+            <input type="email" name="email_change_new_confirm" id="email_change_confirm" placeholder="Confirm Email-id" />
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="button" class="btn btn-default" onclick="save_email_id_new(@uid)">Save</button>
+            </div>
+        </div>
+        <span id="err_email"></span>
+</form>
+
+    </div>
+
+       
+    </div>

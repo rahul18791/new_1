@@ -1,0 +1,25 @@
+﻿@{
+var uid=Request["uid"];
+if(uid!=null)
+{
+    
+
+Session["email"]=null;
+
+Session["uid"]=null;
+
+Session.Clear();
+
+if(Session["email"]==null)
+{
+    
+Response.Redirect("~/Page");
+
+}
+
+
+}    
+
+}
+
+

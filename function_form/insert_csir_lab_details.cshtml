@@ -1,0 +1,40 @@
+﻿@{
+var db=Database.Open("Sym_db");
+//no of rows that are need to be added in the table
+int no_rows_lab=int.Parse(Request["rec_details_lab"]);    
+
+//insert the details via for loop
+for(var i=1;i<=no_rows_lab;i++)
+{
+    
+string name_lab_i=Request["lab_name_"+i];
+string tech_sess_i=Request["tech_session_name_"+i];
+
+var check_data_prs_lab=db.QuerySingle("SELECT * FROM csir_lab_details WHERE uid_user=@0 AND row_no=@1",Session["uid"],i);
+if(check_data_prs_lab!=null)
+{
+  //update
+   var update_pres_val_lb=db.Execute("UPDATE csir_lab_details SET lab=@0,tech_session=@1 WHERE uid_user=@2 AND row_no=@3",name_lab_i,tech_sess_i,Session["uid"],i);   
+}
+
+   else
+   {
+    //inert in csir_lab_details   
+      var insert_csir_lab_details=db.Execute("INSERT INTO csir_lab_details(lab,tech_session,uid_user,row_no) VALUES(@0,@1,@2,@3)",name_lab_i,tech_sess_i,Session["uid"],i);
+
+     
+   }    
+
+
+    
+    
+    
+
+    
+}
+Response.Redirect("~/u_page_5");
+ //<form action="~/function_form/update_rec_page_4" method="post">    
+
+}
+
+

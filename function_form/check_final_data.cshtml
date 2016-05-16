@@ -1,0 +1,16 @@
+﻿@{
+var db=Database.Open("Sym_db");
+//update user_sym_details
+var id=Request["id_final"];
+var name_file=Request.Files["files"];
+var n=name_file.FileName;
+int i=1;
+if(id!=null)
+{
+var update_final_sym_details=db.Execute("UPDATE user_sym_details SET final_submit_done=@0 WHERE uid=@1",i,id);
+@n;
+}
+    
+}
+
+

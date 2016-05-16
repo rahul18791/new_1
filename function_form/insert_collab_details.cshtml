@@ -1,0 +1,46 @@
+﻿@{
+var db=Database.Open("Sym_db");
+//no of rows that are need to be added in the table
+int no_rows=int.Parse(Request["rec_colb_details"]);    
+
+
+
+
+
+//insert the details via for loop
+for(var i=1;i<=no_rows;i++)
+{
+    
+string name_colb_i=Request["name_colab_details_"+i];
+string org_type_i=Request["colab_org_type_"+i];
+
+
+
+var check_data_prs=db.QuerySingle("SELECT * FROM collab_details WHERE id_user=@0 AND row_no=@1",Session["uid"],i);
+if(check_data_prs!=null)
+{
+  //update
+   var update_pres_val=db.Execute("UPDATE collab_details SET name=@0,org_type=@1 WHERE id_user=@2 AND row_no=@3",name_colb_i,org_type_i,Session["uid"],i);   
+}
+
+   else
+   {
+       
+      var insert_colab=db.Execute("INSERT INTO collab_details(name,org_type,id_user,row_no) VALUES(@0,@1,@2,@3)",name_colb_i,org_type_i,Session["uid"],i);
+
+     
+   }    
+
+
+    
+    
+    
+
+    
+}
+Response.Redirect("~/u_page_4");
+ //<form action="~/function_form/update_rec_page_4" method="post">    
+
+}
+
+

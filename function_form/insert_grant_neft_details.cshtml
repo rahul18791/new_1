@@ -1,0 +1,237 @@
+﻿@{
+   
+  
+   var db = Database.Open("Sym_db");
+    var prv_grant = Request["prv_grant"];
+    var neft_id = Request["neft_per_id"];
+    string any_other = Request["any_other_neft"];
+    //ok then lets try again
+    //1-check if details regrading are present or not
+    //2-if present than update the data
+    //3-if not present than insert the data
+    //4-if file not there than don't give any error
+    //simple as baking a cake
+    var temp=3;
+   @* var get_max = db.QuerySingle("SELECT MAX(row_no) AS my_row FROM prv_grant_details WHERE uid_user=@0", Session["uid"]);
+    if(get_max!=null)
+    {
+
+        <p>hello in null</p>
+       /* if (get_max.my_row != 0)
+        {
+            temp = get_max.my_row;
+        }*/
+
+
+    }
+*@
+
+
+
+
+    var select_to_check_data = db.QuerySingle("SELECT * FROM prv_grant_details WHERE uid_user=@0", neft_id);
+    //for loop for taking the data
+    if (select_to_check_data != null)
+    {
+
+        for (var i = 1; i <= temp; i++)
+        {
+
+            //get the other values if file of uc is present else display an error
+            var tot_am_i = Request["total_amount_prv_" + i];
+            var csir_ref_no_i = Request["csir_ref_no_" + i];
+            string prv_g_title_i = Request["prv_grant_title_" + i];
+            string frm_date_i = Request["date_prv_from_" + i];
+            string to_date_i = Request["date_prv_to_" + i];
+            var ref_no_i = Request["ref_no_" + i];
+            var csir_year_i = Request["csir_year_" + i];
+            string date_grant_i = Request["date_grant_" + i];
+
+            //file taken
+            var file_i = Request.Files["file_uc_" + i];
+            var fileName_i = Path.GetFileName(file_i.FileName);
+            //var fileName_i = "";
+            if (fileName_i == "")
+            {
+                // <p>Update while null</p><p>@i</p>
+                string c_i = null;
+                var update_my_prv_table = db.Execute("UPDATE prv_grant_details SET total_amount=@0,grant_ref_no_file=@1,conf_title=@2,conf_period_from=@3,conf_period_to=@4,ref_no=@5,date=@6,file_name=@7,neft_person_id=@8,grant_ref_no_file_year=@9 WHERE uid_user=@10 AND row_no=@11", tot_am_i, csir_ref_no_i, prv_g_title_i, frm_date_i, to_date_i, ref_no_i, date_grant_i, c_i, neft_id, csir_year_i, Session["uid"], i);
+
+            }
+            // var file_i = Request.Files["file_uc_"+i];
+            else
+            {
+                // <p>update while saving</p><p>@fileName_i</p>
+                // fileName_i = Path.GetFileName(file_i.FileName);
+                var path_i = Path.Combine(Server.MapPath("~/Images/"), fileName_i);
+                file_i.SaveAs(path_i);
+                var update_my_prv_table_2 = db.Execute("UPDATE prv_grant_details SET total_amount=@0,grant_ref_no_file=@1,conf_title=@2,conf_period_from=@3,conf_period_to=@4,ref_no=@5,date=@6,file_name=@7,neft_person_id=@8,grant_ref_no_file_year=@9 WHERE uid_user=@10 AND row_no=@11", tot_am_i, csir_ref_no_i, prv_g_title_i, frm_date_i, to_date_i, ref_no_i, date_grant_i, fileName_i, neft_id, csir_year_i, Session["uid"], i);
+
+            }
+
+            //var update_my_prv_table = db.Execute("UPDATE prv_grant_details SET total_amount=@0,grant_ref_no=@1,conf_title=@2,conf_period_from=@3,conf_period_to=@4,ref_no=@5,date=@6,file_name=@7,neft_person_id=@8 WHERE uid_user=@9 AND row_no=@10", tot_am_i, csir_ref_no_i, prv_g_title_i, frm_date_i, to_date_i, ref_no_i, date_grant_i,fileName_i, neft_id, Session["uid"], i);
+        }
+
+        //update as data is not equal to null something is present there
+        //update query
+
+    }
+    else
+    {
+        for (var j = 1; j <= temp; j++)
+        {
+
+            //get the other values if file of uc is present else display an error
+            var tot_am_j = Request["total_amount_prv_" + j];
+            var csir_ref_no_j = Request["csir_ref_no_" + j];
+            string prv_g_title_j = Request["prv_grant_title_" + j];
+            string frm_date_j = Request["date_prv_from_" + j];
+            string to_date_j = Request["date_prv_to_" + j];
+            var ref_no_j = Request["ref_no_" + j];
+            string date_grant_j = Request["date_grant_" + j];
+            var csir_year_j = Request["csir_year_" + j];
+
+            var file_j = Request.Files["file_uc_" + j];
+            var fileName_j = Path.GetFileName(file_j.FileName);
+            //var fileName_i = "";
+            if (fileName_j == "")
+            {
+                // <p>Update while null</p><p>@i</p>
+                string c_j = null;
+                var insert_fresh_prv_details = db.Execute("INSERT INTO prv_grant_details(total_amount,grant_ref_no_file,conf_title,conf_period_from,conf_period_to,ref_no,date,uid_user,file_name,neft_person_id,row_no,grant_ref_no_file_year)VALUES(@0,@1,@2,@3,@4,@5,@6,@7,@8,@9,@10,@11)", tot_am_j, csir_ref_no_j, prv_g_title_j, frm_date_j, to_date_j, ref_no_j, date_grant_j, Session["uid"], c_j, neft_id, j, csir_year_j);
+            }
+            // var file_i = Request.Files["file_uc_"+i];
+            else
+            {
+                //fileName_j = Path.GetFileName(file_j.FileName);
+                var path_j = Path.Combine(Server.MapPath("~/Images/"), fileName_j);
+                file_j.SaveAs(path_j);
+                var insert_fresh_prv_details = db.Execute("INSERT INTO prv_grant_details(total_amount,grant_ref_no_file,conf_title,conf_period_from,conf_period_to,ref_no,date,uid_user,file_name,neft_person_id,row_no,grant_ref_no_file_year)VALUES(@0,@1,@2,@3,@4,@5,@6,@7,@8,@9,@10,@11)", tot_am_j, csir_ref_no_j, prv_g_title_j, frm_date_j, to_date_j, ref_no_j, date_grant_j, Session["uid"], fileName_j, neft_id, j, csir_year_j);
+            }
+
+            //insert fresh result in the database after the row present\
+
+        }
+    }
+
+
+
+    @*
+        if(Convert.ToInt32(neft_id)==001)
+        {
+
+        }
+        //check if total amount present
+        var check_tot_present = db.QuerySingle("SELECT * FROM prv_grant_details WHERE uid_user=@0", Session["uid"]);
+        if ((Convert.ToInt32(prv_grant) == 0) && (Convert.ToInt32(check_tot_present.total_amount) == 0) && (check_tot_present.conf_title == null))
+        {
+            //check if neft id is present or not
+            var check_neft_id = db.QuerySingle("SELECT * FROM prv_grant_details WHERE uid_user=@0", Session["uid"]);
+            if (check_neft_id.uid_user != null)
+            {
+                //update if id is present
+                var update_only_neft_id = db.Execute("UPDATE prv_grant_details SET neft_person_id=@0 WHERE uid_user=@1", neft_id, Session["uid"]);
+            }
+
+        }
+        else
+        {
+
+
+            //select max rows
+            var get_max = db.QueryValue("SELECT MAX(row_no) FROM prv_grant_details WHERE uid_user=@0", Session["uid"]);
+
+            var max_val_get = 3;
+            if (get_max == null)
+            {
+                max_val_get = 0;
+
+            }
+
+
+
+
+            //check in database if info and file is present in the database
+            for (var i = 1; i <= max_val_get; i++)
+            {
+
+                //get the other values if file of uc is present else display an error
+                var tot_am_i = Request["total_amount_prv_" + i];
+                var csir_ref_no_i = Request["csir_ref_no_" + i];
+                string prv_g_title_i = Request["prv_grant_title_" + i];
+                string frm_date_i = Request["date_prv_from_" + i];
+                string to_date_i = Request["date_prv_to_" + i];
+                var ref_no_i = Request["ref_no_" + i];
+                string date_grant_i = Request["date_grant_" + i];
+
+
+
+                var check_for_image_i = db.QuerySingle("SELECT file_name FROM prv_grant_details WHERE uid_user=@0 AND row_no=@1", Session["uid"], i);
+
+
+                var file_i = Request.Files["file_uc_" + i];
+                var fileName_i = Path.GetFileName(file_i.FileName);
+
+
+                           if ((fileName_i == null) && (check_for_image_i == null))
+                           {
+
+
+              Response.Redirect("~/u_page_6?im_up=nill");
+
+
+           }
+
+
+
+
+
+        else if((fileName_i == null)&&(check_for_image_i!=null))
+             {
+
+
+
+
+     var check_prs_details_grant_i=db.Execute("UPDATE prv_grant_details SET total_amount=@0,grant_ref_no=@1,conf_title=@2,conf_period_from=@3,conf_period_to=@4,ref_no=@5,date=@6,file_name=@7,neft_person_id=@8 WHERE uid_user=@9 AND row_no=@10",tot_am_i,csir_ref_no_i,prv_g_title_i,frm_date_i,to_date_i,ref_no_i,date_grant_i,check_for_image_i.file_name,neft_id,Session["uid"],i);
+
+           }
+           else if((fileName_i!=null)&&(check_for_image_i!=null))
+           {
+
+
+            var path_i = Path.Combine(Server.MapPath("~/Images/"), fileName_i);
+            file_i.SaveAs(path_i);
+
+    var check_prs_details_grant_i=db.Execute("UPDATE prv_grant_details SET total_amount=@0,grant_ref_no=@1,conf_title=@2,conf_period_from=@3,conf_period_to=@4,ref_no=@5,date=@6,file_name=@7,neft_person_id=@8 WHERE uid_user=@9 AND row_no=@10",tot_am_i,csir_ref_no_i,prv_g_title_i,frm_date_i,to_date_i,ref_no_i,date_grant_i,fileName_i,neft_id,Session["uid"],i);
+
+
+           }
+           else
+                           {
+
+                           }
+
+     /* else
+          {
+
+                var path_n_i = Path.Combine(Server.MapPath("~/Images/"), fileName_i);
+                file_i.SaveAs(path_n_i);
+     var insert_details=db.Execute("INSERT INTO prv_grant_details(total_amount,grant_ref_no,conf_title,conf_period_from,conf_period_to,ref_no,date,uid_user,file_name,neft_person_id,row_no)VALUES(@0,@1,@2,@3,@4,@5,@6,@7,@8,@9,@10)",tot_am_i,csir_ref_no_i,prv_g_title_i,frm_date_i,to_date_i,ref_no_i,date_grant_i,Session["uid"],fileName_i,neft_id,i);
+
+
+          }*/
+
+
+
+
+
+    }
+    }
+    *@
+    Response.Redirect("~/u_page_6");
+
+
+
+    }
+
+    

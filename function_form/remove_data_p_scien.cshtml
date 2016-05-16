@@ -1,0 +1,13 @@
+﻿@{
+var db=Database.Open("Sym_db");    
+
+var id_user_fr_p_sc=Request["user_id_p_sc"];
+var row_to_del_fr_p_sc=Request["row_del_p_sc"];
+
+
+var delete_data_lab=db.Execute("DELETE FROM part_scien_csir_details WHERE uid_user=@0 AND row_no=@1",id_user_fr_p_sc,row_to_del_fr_p_sc);
+
+
+}
+
+

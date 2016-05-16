@@ -1,0 +1,15 @@
+﻿@{
+  //get name
+    var db = Database.Open("Sym_db");  
+    var id_neft=Request["neft_per_id"];
+    string any_other = Request["any_other_neft"];
+    var id_user=Session["uid"];
+    //var check_if_neft = db.QuerySingle("SELECT * FROM neft_pay WHERE uid=@0",Session["uid"]);
+    
+    var insert_details_neft_per_id = db.Execute("INSERT INTO neft_pay (neft_per_id,other_person,uid) VALUES(@0,@1,@2)",id_neft,any_other,id_user);
+    if(insert_details_neft_per_id!=null)
+    {
+        
+     Response.Redirect("~/u_page_6");
+    }
+}

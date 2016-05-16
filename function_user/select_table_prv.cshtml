@@ -1,0 +1,30 @@
+﻿@{
+var db=Database.Open("Sym_db");    
+var val_radio=Request["val_radio"]; 
+if(int.Parse(val_radio)==1)
+{
+  <table class="table table-hover" border="1" style="border-color: #310f16">
+      <thead>
+      <tr style="background-color: rgba(79, 83, 80, 0.35)">
+      <th>S.No.</th><th>Total Amount(Rs.)</th><th>CSIR Grant Reference No</th><th colspan="2" style="text-align: center">Conference Title and period</th><th colspan="2">Whether the Utilization Certificate have been submitted(indicate the reference number and date also)</th><th style="max-width:200px">Copy of Utilzation Certificate<br /><p style="color:red">(Only pdf allowed)</p></th> </tr>
+      <tr> <th></th> <th></th> <th></th> <th>Title</th><th colspan="1" style="text-align: center">Period</th> <th>Yes</th> <th>No</th> </tr>
+     
+      </thead>
+      <tbody>
+      <tr><td>(i)</td><td><input type="number" name="total_amount_prv_1" style="max-width:100px"></td><td><pre><b>SYM/</b><input type="number" name="csir_ref_no_1" style="max-width:60px"><b>/</b><input type="number" name="csir_year_1" style="max-width:40px" /><b>-HRD</b></pre></td><td><textarea rows="3" cols="18" name="prv_grant_title_1"></textarea></td><td style="text-align:center"><b>(From)</b><br /><input type="date" name="date_prv_from_1" style="max-width:150px" data-toggle="tooltip" data-placement="top" title="From date"/><br /><b>(To)</b><br /><input type="date" name="date_prv_to_1" style="max-width:150px"></td><td><input type="radio" id="rad_1_grant_1" name="val_uc_1" onclick="show_other_details(1,1);"></td><td><input type="radio" name="val_uc_1" onclick="show_other_details(0,1);"></td><td><input type="file" name="file_uc_1" accept="application/pdf"></td></tr>
+      <tr><td>(ii)</td><td><input type="number" name="total_amount_prv_2" style="max-width:100px"></td><td><pre><b>SYM/</b><input type="number" name="csir_ref_no_2" style="max-width:60px"><b>/</b><input type="number" name="csir_year_2" style="max-width:40px" /><b>-HRD</b></pre></td><td><textarea rows="3" cols="18" name="prv_grant_title_2"></textarea></td><td style="text-align:center"><b>(From)</b><br /><input type="date" name="date_prv_from_2" style="max-width:150px"><br /><b>(To)</b><br /><input type="date" name="date_prv_to_2" style="max-width:150px"></td><td><input type="radio" id="rad_1_grant_2" name="val_uc_2" onclick="show_other_details(1,2);"></td><td><input type="radio" name="val_uc_2" onclick="show_other_details(0,2);"></td><td><input type="file" name="file_uc_2" accept="application/pdf"></td></tr>
+      <tr><td>(iii)</td><td><input type="number" name="total_amount_prv_3" style="max-width:100px"></td><td><pre><b>SYM/</b><input type="number" name="csir_ref_no_3" style="max-width:60px"><b>/</b><input type="number" name="csir_year_3" style="max-width:40px" /><b>-HRD</b></pre></td><td><textarea rows="3" cols="18" name="prv_grant_title_3"></textarea></td><td style="text-align:center"><b>(From)</b><br /><input type="date" name="date_prv_from_3" style="max-width:150px"><br /><b>(To)</b><br /><input type="date" name="date_prv_to_3" style="max-width:150px"></td><td><input type="radio" id="rad_1_grant_3" name="val_uc_3" onclick="show_other_details(1,3);"></td><td><input type="radio" name="val_uc_3" onclick="show_other_details(0,3);"></td><td><input type="file" name="file_uc_3" accept="application/pdf"></td></tr>
+      </tbody>
+  </table>
+    <button type="submit" class="btn btn-primary">Save</button>
+<p style="color: #840c04">Copy of the Audited Utilization Cerificate of the last grant received from CSIR may please be enclosed.<b>The request for the grant would be considered only if audited Utilization Certificate of all previous grants has been sent and the copy of the last grant is enclosed herewith.</b></p>
+    <hr />
+    //get details from neft table
+
+}   
+
+else
+{
+    
+}
+}

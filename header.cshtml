@@ -1,0 +1,122 @@
+﻿<!-- Fixed navbar -->
+  @if(Session["uid"]!=null)//navbar for user dashboard
+              {
+                  var db = Database.Open("sym_db");
+                   var uid_user=Session["uid"];
+                  
+                   <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="~/dashboard_Layout">Symposium Online Application Portal</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+              @if(Convert.ToInt32(Session["priv"])==1)
+              {
+                <li><a href="#">ADMIN LOGIN</a></li>
+              }
+              else if (Convert.ToInt32(Session["priv"]) == 2)
+              {
+
+                <li><a href="#">Departmental LOGIN</a></li>
+
+              }
+              else
+              {
+                  //get email acc. to session id
+                  var get_session_email = db.QuerySingle("SELECT email FROM user_sym_details WHERE uid=@0",uid_user);
+              <li><a href="#"> Hello, @get_session_email.email </a></li>
+               }
+              @* check if application has been finally submitted or not*@
+              @{
+                 
+              var check_final_submit=db.QuerySingle("SELECT final_submit_done FROM user_sym_details WHERE uid=@0 ",Session["uid"]);
+
+              }
+              @if(Convert.ToInt32(check_final_submit.final_submit_done)==1)
+              {
+                  
+               <li><a href="~/view_print_final?file_data=@uid_user&&page_type=10" target="_blank">View/Print Application</a></li>   
+              }
+              else
+              {
+               <li><a href="~/dashboard_Layout">Dashboard</a></li>   
+              }
+            
+            <li><a href="~/u_settings">Settings</a></li>
+            <li><a href="#">Profile</a></li>
+            <li> <a href='~/logout?uid=@uid_user'>Log out</a></li>
+          </ul>
+          <form class="navbar-form navbar-right">
+          
+          </form>
+        </div>
+      </div>
+    </nav>
+          
+          //navbar for all other uses
+                  }   
+else
+{
+ <nav class="navbar navbar-default navbar-fixed-top" style="background: linear-gradient(#6697ff,#F0FFFF,#708090)">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="~/Page">CSIR</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            
+            <li class="active"><a href="#home">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#contact">Contact</a></li>
+            <li class="dropdown">
+             @* <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
+    <ul class="dropdown-menu">
+      <li><a href="#">Action</a></li>
+      <li><a href="#">Another action</a></li>
+      <li><a href="#">Something else here</a></li>
+      <li role="separator" class="divider"></li>
+      <li class="dropdown-header">Nav header</li>
+      <li><a href="#">Separated link</a></li>
+      <li><a href="#">One more separated link</a></li>
+    </ul>
+            *@
+            </li>
+          </ul>
+             <ul class="nav navbar-nav navbar-right">
+        
+           @if (Session["uid"]!=null) {
+                
+            
+                            <text>
+                                Hello, <a class="email" href="~/Account/Manage" title="Manage">@Session["email"]</a>!
+                                <form id="logoutForm" action="~/Account/Logout" method="post">
+                                   
+                                    <a href="logout.cshtml?uid=uid_user">Log out</a>
+                                </form>
+                            </text>
+                        }
+            else
+            {
+           
+              <li><a href="~/register">Register</a></li>
+              <li><a href="~/login">Login</a></li>
+                }
+              
+            </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+            }

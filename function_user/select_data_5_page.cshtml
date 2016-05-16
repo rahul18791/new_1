@@ -1,0 +1,239 @@
+﻿@{
+var db=Database.Open("Sym_db");    
+var show_val_data=Request["data_to_5_val"]; 
+if(show_val_data=="a")
+{
+//check table
+var check_tech_sess_table=db.QuerySingle("SELECT * FROM tech_session_details WHERE uid_user=@0",Session["uid"]);
+var do_sess_table="SELECT * FROM tech_session_details WHERE uid_user=@0";
+//get max value
+var get_max_val=db.QueryValue("SELECT MAX(row_no) FROM tech_session_details WHERE uid_user=@0",Session["uid"]);
+var value_row_max=get_max_val;
+<b>Kindly Provide the details of various Technical Sessions in proposed
+Symposium/Seminar/Conference/Workshop etc:</b> 
+
+
+<form action="function_form/insert_tech_sess_details" method="post" id="form">
+<table class="table table-hover">
+    <thead style="color: #164c8f">
+<tr>
+<th>S.no</th>
+<th>Title of Technical Session</th>
+<th>Time</th>
+<th>Date</th>
+    <th>Add/Remove rows</th>
+</tr>
+</thead>
+<tbody>
+@if(check_tech_sess_table!=null)
+{
+    foreach(var row_tech in db.Query(do_sess_table,Session["uid"]))
+    {
+   <tr id="tech_@(row_tech.row_no)_row">
+<td>@(row_tech.row_no).</td>
+<td><input type="text" placeholder="Title" name="title_tech_@(row_tech.row_no)" value="@row_tech.title"></td>
+<td><input type="time" placeholder="Time" name="time_tech_@(row_tech.row_no)" value="@row_tech.time"></td>
+<td><input type="date" name="date_tech_@(row_tech.row_no)" value="@row_tech.date"></td>
+       @if(get_max_val==row_tech.row_no)
+       {
+
+<td id="add_@(row_tech.row_no)_tech_row"><input type="button" onclick="add_rows_tech_1(@(value_row_max+=1),@Session["uid"])" value="Add"><input type="button" onclick="remove_rows_tech(@(row_tech.row_no),@Session["uid"])" value="Remove"><input type="hidden" value="@row_tech.row_no" id="rec_details_tech" name="rec_details_tech"></td>
+}
+       else
+       {
+<td style="display: none" id="add_@(row_tech.row_no)_tech_row"><input type="button" onclick="add_rows_tech_1(@(value_row_max),@Session["uid"])" value="Add"><input type="button" onclick="remove_rows_tech(@(row_tech.row_no),@Session["uid"])" value="Remove"><input type="hidden" value="@row_tech.row_no" id="rec_details_tech" name="rec_details_tech"></td>           
+       }
+</tr> 
+}
+
+}
+    else
+    {
+ <tr id="tech_1_row">
+<td>1.</td>
+<td><input type="text" placeholder="Title" name="title_tech_1"></td>
+<td><input type="time" placeholder="Time" name="time_tech_1"></td>
+<td><input type="date" name="date_tech_1"></td>
+<td id="add_1_tech_row"><input type="button" onclick="add_rows_tech_1(2);" value="Add"><input type="hidden" id="rec_details_tech" name="rec_details_tech" value="1"></td>
+</tr>   
+    }
+
+
+</tbody>
+</table>
+  <button type="submit" id="submit" class="btn btn-primary">Save</button>
+    </form>
+}
+else if(show_val_data=="b")
+{
+//check if details are present in speaker details
+var check_speaker=db.QuerySingle("SELECT * FROM speaker_details WHERE uid_user=@0",Session["uid"]);
+//get details to show data
+var get_speak_data="SELECT * FROM speaker_details WHERE uid_user=@0";
+//get max val
+var get_speak_max_val=db.QueryValue("SELECT MAX(row_no) FROM speaker_details WHERE uid_user=@0",Session["uid"]);
+ 
+<b>Indicate also the names of principal speaker(s) delivering keynote addresses of various technical
+sessions:</b>
+<form action="function_form/insert_speak_details" method="post">
+  <table class="table table-hover">
+    <thead style="color: #164c8f">
+<tr>
+<th>S.no</th>
+<th>Title</th>
+<th>Name</th>
+<th>Organization</th>
+    <th>Technical Session</th>
+    <th>Add/Remove rows</th>
+</tr>
+</thead>
+<tbody>
+@if(check_speaker!=null)
+{
+ foreach(var row_speak in db.Query(get_speak_data,Session["uid"]))
+    {
+  <tr id="speak_@(row_speak.row_no)_row">
+<td>@(row_speak.row_no).</td>
+<td><input type="text" placeholder="Title" name="speak_title_@(row_speak.row_no)" value="@(row_speak.title)"></td>
+<td><input type="text" placeholder="Name" name="speak_name_@(row_speak.row_no)" value="@(row_speak.name)" ></td>
+<td><input type="text" name="speak_org_@(row_speak.row_no)" placeholder="Organization" value="@(row_speak.organisation)"></td>
+<td><input type="text" name="spk_tech_session_@(row_speak.row_no)" placeholder="Technical session" value="@(row_speak.tech_session)"></td>
+
+@if(get_speak_max_val==row_speak.row_no)
+{
+<td id="add_@(row_speak.row_no)_speak_row"><input type="button" onclick="add_rows_speak(@(get_speak_max_val+=1),@Session["uid"])" value="Add"><input type="hidden" id="rec_details_speak" name="rec_details_speak" value="@(row_speak.row_no)"><input type="button" onclick="remove_rows_speak(@(row_speak.row_no),@Session["uid"])" value="Remove"></td>
+}
+else
+      {
+ <td style="display: none" id="add_@(row_speak.row_no)_speak_row"><input type="button" onclick="add_rows_speak(@(get_speak_max_val),@Session["uid"])" value="Add"><input type="button" onclick="remove_rows_speak(@(row_speak.row_no),@Session["uid"])" value="Remove"></td>         
+      }
+</tr>  
+}
+}
+    else
+    {
+<tr id="speak_1_row">
+<td>1.</td>
+<td><input type="text" placeholder="Title" name="speak_title_1"></td>
+<td><input type="text" placeholder="Name" name="speak_name_1"></td>
+<td><input type="text" name="speak_org_1" placeholder="Organization"></td>
+<td><input type="text" name="spk_tech_session_1" placeholder="Technical session"></td>
+<td id="add_1_speak_row"><input type="button" onclick="add_rows_speak(2,@Session["uid"])" value="Add"><input type="hidden" id="rec_details_speak" name="rec_details_speak" value="1"></td>
+</tr>
+}
+</tbody>
+</table>
+     <button type="submit" id="submit" class="btn btn-primary">Save</button>
+    </form>  
+}
+else if(show_val_data=="c")
+{
+    //check if data is present
+    var check_csir_lab_data=db.QuerySingle("SELECT * FROM csir_lab_details WHERE uid_user=@0",Session["uid"]);
+    //get details
+    var get_lab_details="SELECT * FROM csir_lab_details WHERE uid_user=@0";
+    //get max value
+    var get_max_lab_row_val=db.QueryValue("SELECT MAX(row_no) FROM csir_lab_details WHERE uid_user=@0",Session["uid"]);
+   <b>Have you approached any of the CSIR Laboratories for co-sponsorship or for
+participation in the Symposium/ Seminar/ Conference? If so, provide the details of names
+of such laboratories/Institutes along with details of the different technical sessions :</b>
+<form action="function_form/insert_csir_lab_details" method="post">
+  <table class="table table-hover">
+    <thead style="color: #164c8f">
+<tr>
+<th>S.no</th>
+<th>Laboratory</th>
+<th>Technical Session</th>
+<th>Add/Remove rows</th>
+</tr>
+</thead>
+<tbody>
+@if(check_csir_lab_data!=null)
+{
+foreach(var row_lab in db.Query(get_lab_details,Session["uid"]))
+{
+ <tr id="lab_@(row_lab.row_no)_row">
+<td>@(row_lab.row_no).</td>
+<td><input type="text" placeholder="Laboratory" name="lab_name_@(row_lab.row_no)" value="@row_lab.lab"></td>
+<td><input type="text" placeholder="Technical session" name="tech_session_name_@(row_lab.row_no)" value="@row_lab.tech_session"></td>
+
+     @if(get_max_lab_row_val==row_lab.row_no)
+     {
+<td id="add_@(row_lab.row_no)_lab_row"><input type="button" onclick="add_rows_lab(@(get_max_lab_row_val+=1),@Session["uid"])" value="Add"><input type="button" onclick="remove_rows_lab(@(row_lab.row_no),@Session["uid"]);" value="Remove"><input type="hidden" id="rec_details_lab" name="rec_details_lab" value="@(get_max_lab_row_val)"></td>
+     }
+     else
+     {
+<td style="display: none" id="add_@(row_lab.row_no)_lab_row"><input type="button" onclick="add_rows_lab(@(get_max_lab_row_val),@Session["uid"])" value="Add"><input type="button" onclick="remove_rows_lab(@(row_lab.row_no),@Session["uid"]);" value="Remove"></td>
+     }
+</tr>   
+}
+}
+else
+      {
+<tr id="lab_1_row">
+<td>1.</td>
+<td><input type="text" placeholder="Laboratory" name="lab_name_1"></td>
+<td><input type="text" placeholder="Technical session" name="tech_session_name_1"></td>
+<td id="add_1_lab_row"><input type="button" onclick="add_rows_lab(2,@Session["uid"])" value="Add"><input type="hidden" id="rec_details_lab" value="1" name="rec_details_lab"></td>
+</tr>
+}
+</tbody>
+</table>   
+   <button type="submit" id="submit" class="btn btn-primary">Save</button>    
+</form>
+}
+else
+{
+//check details if already available
+var check_p_lab_details=db.QuerySingle("SELECT * FROM part_scien_csir_details WHERE uid_user=@0",Session["uid"]);
+//get data
+var get_data_c_lab_part="SELECT * FROM part_scien_csir_details WHERE uid_user=@0";
+//get max value
+var get_max_p_scien=db.QueryValue("SELECT MAX(row_no) FROM part_scien_csir_details WHERE uid_user=@0",Session["uid"]);
+ <b>Kindly Provide the Names of the CSIR Scientists who will be participating :</b>
+<form action="function_form/insert_p_lab_details" method="post">
+<table class="table table-hover">
+    <thead style="color: #164c8f">
+<tr>
+<th>S.no</th>
+<th>Name of the Scientists</th>
+<th>Name of the Laboratory</th>
+<th>Add/Remove rows</th>
+</tr>
+</thead>
+<tbody>
+@if(check_p_lab_details!=null)
+{
+    foreach(var row_p_scien in db.Query(get_data_c_lab_part,Session["uid"]))
+    {
+ <tr id="scien_@(row_p_scien.row_no)_row">
+<td>@(row_p_scien.row_no).</td>
+<td><input type="text" placeholder="Name of the Scientists" name="scien_name_@(row_p_scien.row_no)" value="@(row_p_scien.name)"></td>
+<td><input type="text" placeholder="Name of the Laboratory" name="tech_session_name_@(row_p_scien.row_no)" value="@(row_p_scien.name_lab)"></td>
+@if(get_max_p_scien==row_p_scien.row_no)
+     {
+<td id="add_@(row_p_scien.row_no)_scien_row"><input type="button" onclick="add_rows_scien(@(get_max_p_scien+=1),@Session["uid"]);" value="Add"><input type="hidden" id="rec_details_scien_p" name="rec_details_scien" value="@(row_p_scien.row_no)"><input type="button" onclick="remove_rows_scien(@(row_p_scien.row_no),@Session["uid"]);" value="Remove"></td>
+}
+     else
+     {
+ <td style="display: none" id="add_@(row_p_scien.row_no)_scien_row"><input type="button" onclick="add_rows_scien(@(get_max_p_scien),@Session["uid"]);" value="Add"><input type="button" onclick="remove_rows_scien(@(row_p_scien.row_no),@Session["uid"]);" value="Remove"></td>        
+     }
+</tr> 
+}  
+}
+else
+    {
+<tr id="scien_1_row">
+<td>1.</td>
+<td><input type="text" placeholder="Name of the Scientists" name="scien_name_1"></td>
+<td><input type="text" placeholder="Name of the Laboratory" name="tech_session_name_1"></td>
+<td id="add_1_scien_row"><input type="button" onclick="add_rows_scien(2,@Session["uid"]);" value="Add"><input type="hidden" id="rec_details_scien" name="rec_details_scien" value="1"></td>
+</tr>
+}
+</tbody>
+</table>  
+<button type="submit" id="submit" class="btn btn-primary">Save</button> 
+   </form>  
+}
+}
+

@@ -1,0 +1,209 @@
+﻿<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta name="viewport" content="width=device-width,initial-scale=1.0">
+        @RenderPage("design_boot.cshtml")
+        <meta charset="utf-8" />    
+        <title>CSIR</title>   
+         <link rel="shortcut icon" href="~/images/csir_logo.ico"/>
+
+        <script src="~/js/jquery-2.js"></script>
+        <script type="text/javascript" src="~/js/page.js"></script>
+         <link href="bootstrap.min.css" rel="stylesheet">
+        <link href="navbar.css" rel="stylesheet">
+ 
+        <script>document.onkeydown = function(e) {
+        if (e.ctrlKey && 
+            (e.keyCode === 67 || 
+             e.keyCode === 86 || 
+             e.keyCode === 85 || 
+             e.keyCode === 117)) {
+            alert('not allowed');
+            return false;
+        } else {
+            return true;
+        }
+};</script>
+    </head>
+    <body style="background:linear-gradient(white,white,white)">
+        @if(Request["status_done"]=="reg_al")
+        {
+            <script>
+
+                alert("Email Id registered!please go on home page and read instrustions in case you have forgot your password");
+            </script>
+        }
+
+       @RenderPage("header.cshtml")
+        <div class="container">
+             <div class="page-header">
+          
+      <img src="~/images/img-csir.jpg" width="138px" alt="csir-logo" />
+<h3>Council of Scientific and Industrial Research (CSIR), established in 1942,</h1>
+        <!-- <marquee><b style="color: #ff6a00">Welcome To CSIR HRDG Symposium Online Application Portal</b></marquee> -->
+      </div>
+            @if (Request["er"] == "mail")
+            {
+                <span style="color:red"><h4>Email id's mismatch Please correct the error and try again</h4></span>
+            }  
+       <h6 style="text-align: center;background-color: #0094ff;height:30px"><b style="color: #ffd800">Registration Form</b></h6>
+              
+        <form method="get" action="register_details.cshtml">
+     <!--
+          name of the user  
+            -->    
+<table border="0" align="center" width="100%"> 
+   <tbody>   
+       <tr>  
+           <td>    
+    <label for="Name">First Name</label></td>
+<td>
+    <input type="text" class="" id="f_name" name="f_name" placeholder="First Name" required>
+    </td>
+ 
+</tr>
+        <tr> 
+            <td>   
+    <label for="Name">Middle Name</label>
+                </td>
+            <td>
+    <input type="text" class="" id="m_name" name="m_name" placeholder="Middle Name" onblur="show_full();">
+                </td>
+ 
+
+</tr>
+        <tr>   
+            <td>
+    <label for="Name">Last Name</label>
+                </td>
+            <td>
+    <input type="text" class="" id="l_name" name="last_name" placeholder="Last Name" onblur="show_full();">
+  </td>
+            </tr>
+       <tr>
+  <td>
+    <input type="text" disabled class="form-control" id="full_name" name="full_name" placeholder="Full Name" required> 
+      </td>     
+    </tr>   
+<!--name box ends-->
+
+
+<!--gender select-->
+
+ <tr>
+     <td>
+    <label for="gender">Gender</label>
+</td>
+     <td>
+   <select name="gender_user" required>
+  <option value="99">-Select-</option>
+  <option value="1">Male</option>
+  <option value="0">Female</option> 
+
+  
+</select>
+         </td>
+ </tr>  
+     
+
+  <tr> 
+      <td>
+<label for="ins_name">Mobile Number(10 digits)</label>
+          </td>
+      <td>
+    <input type="text" class="" autocomplete="off" maxlength="10" id="mob_user" name="mob_user" placeholder="Mobile Number" onkeyup="phone(this.value,'r_page')" required>
+  </td>
+</tr>
+<!--gender selection ends
+ <p style="color: #830f0f"><b>Your email id should be written accurately, as all further correspondence will be through email and CSIR - HRDG will not be responsible for any communication not received due to incorrect email id.</b></p>
+    
+    
+    -->
+
+
+
+<!--Email box-->
+    <tr>
+        <td>
+    <label for="exampleInputEmail1">Email address(<i style="color: #f00">Email-id provided in the box will be used for all communications</i>)</label>
+      </td>
+           
+   <td>
+         <input type="email" name="email" autocomplete="off" id="base_email" placeholder="Email" onblur="check_email_base(this.value);">
+      
+      <input type="email" name="conf_email" autocomplete="off" id="conf_email" placeholder="confirm email" onblur="check_email_base(this.value);" required>
+      <span id="err_email"></span>
+  </td>
+    </tr>       
+<!--Email box ends-->
+
+@{
+     var r = new Random();
+    var randomNumber = r.Next();
+    var rand = r.Next(1,9);
+
+    var r_2 = new Random();
+    var randomNumber_2 = r_2.Next();
+    var rand_2 = r_2.Next(12,21);
+}
+<tr>
+<td>
+<label>Enter Final Value</label>
+</td>
+<td>
+<input type="text" disabled value="@rand_2 - @rand ="><input type="text" autocomplete="off" name="cap_val" id="cap_val" onblur="check_rand(this.value);" required ><span id="show_err"><b style="color: #f00"></b></span>
+</td>
+<td>
+<input type="hidden" name="random_val_1" id="random_val_1" value="@rand"/>
+<input type="hidden" name="random_val_2" id="random_val_2" value="@rand_2"/>
+</td>
+
+</tr>
+
+
+
+ @{
+            var i=1;
+            
+            }
+           
+             <!--File attach process-->
+<!--<div id="no_show">
+  <div class="form-group" id="add_data_@i" style="display: block">
+    <label for="exampleInputFile">Attach Files</label>
+    <input type="file" id="file_value_@i" onchange="add_more_button(this.value,@i);" name="file_value_@i" style="display: block">-->
+    
+     <!--to send how much files to upload-->
+  
+  <!--</div>
+ 
+</div>
+<span id="change_acc_file"><input type="hidden" value="@i" name="total_files"></span>
+
+<div class="form-group">
+<textarea class="form-control" rows="2" cols="2" id="show_names" style="background-color: #b6ff00"></textarea>
+
+</div>
+
+-->
+<!--file attach ends-->
+       </tbody>
+    </table>
+                            <button type="submit" class="btn btn-primary">Register</button>
+
+</form>
+        </div>
+       @RenderPage("footer.cshtml") 
+       
+
+<script type="text/javascript">
+    $('.navbar-nav li:nth-child(1)').removeClass('active');
+    $('.navbar-right li:nth-child(1)').addClass('active');
+
+   
+        </script>         
+    <script type="text/javascript" src="~/js/bootstrap.min.js"></script>
+    </body>
+
+</html>

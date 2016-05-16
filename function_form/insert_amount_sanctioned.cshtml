@@ -1,0 +1,21 @@
+﻿@{
+    var db = Database.Open("Sym_db");
+    var id_user_old = Request["id_user_to_sanc"];
+    var sanc_am=Request["sanc_amount"];
+    
+    //insert in the database
+    //check if data is present in application deffered or not
+    //if present then delete
+    var check_if_data_in_def = db.QuerySingle("SELECT reason FROM app_deff WHERE uid=@0",id_user_old);
+    if(check_if_data_in_def.reason!=null)
+    {
+        //delete ALTER TABLE table_namDROP COLUMN column_name
+        var del_def = db.Execute("UPDATE app_deff SET reason=@0,date_time=@1 WHERE uid=@2",null,null,id_user_old);
+    }
+    
+    var insert_database_amount = db.Execute("UPDATE app_sanc SET amount=@0,date_time=@1 WHERE uid=@2",sanc_am, DateTime.Now,id_user_old);  
+    if(insert_database_amount!=null)
+    {
+       <h2 style="color:cadetblue">Amount is sanctioned</h2>
+    }
+    }

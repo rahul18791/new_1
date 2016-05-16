@@ -1,0 +1,47 @@
+﻿@{
+var db=Database.Open("Sym_db");
+//no of rows that are need to be added in the table
+int no_rows_speak=int.Parse(Request["rec_details_speak"]);    
+
+
+//insert the details via for loop
+for(var i=1;i<=no_rows_speak;i++)
+{
+    
+string speak_title_i=Request["speak_title_"+i];
+var speak_name_i=Request["speak_name_"+i];
+var speak_org_i=Request["speak_org_"+i];
+var speak_session_i=Request["spk_tech_session_"+i];
+
+
+
+       
+
+var check_data_prs_sp=db.QuerySingle("SELECT * FROM speaker_details WHERE uid_user=@0 AND row_no=@1",Session["uid"],i);
+if(check_data_prs_sp!=null)
+{
+  //update
+   var update_pres_val_sp=db.Execute("UPDATE speaker_details SET title=@0,name=@1,organisation=@2,tech_session=@3 WHERE uid_user=@4 AND row_no=@5",speak_title_i,speak_name_i,speak_org_i,speak_session_i,Session["uid"],i);   
+}
+
+   else
+   {
+       //insert
+    var insert_colab_sp=db.Execute("INSERT INTO speaker_details(title,name,organisation,tech_session,uid_user,row_no) VALUES(@0,@1,@2,@3,@4,@5)",speak_title_i,speak_name_i,speak_org_i,speak_session_i,Session["uid"],i);
+
+     
+   }    
+
+
+    
+    
+    
+
+    
+}
+Response.Redirect("~/u_page_5");
+ //<form action="~/function_form/update_rec_page_4" method="post">    
+
+}
+
+

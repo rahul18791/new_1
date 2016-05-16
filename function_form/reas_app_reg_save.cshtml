@@ -1,0 +1,13 @@
+﻿@{
+    var db = Database.Open("Sym_db");
+    var id = Request["id_user_reg"];
+    string reas_reg = Request["reas_reg"];
+    //insert in app_regret or update
+    var up_reg_app=db.Execute("UPDATE app_regret SET reason_any=@0,date_time=@1 WHERE uid=@2",reas_reg,DateTime.Now,id);
+    if(up_reg_app!=null)
+    {
+        <h4>Application regretted</h4>
+        
+    }
+        
+}

@@ -1,0 +1,42 @@
+﻿@{
+var db=Database.Open("Sym_db");
+
+//no of rows that are need to be added in the table
+int no_rows_tech=int.Parse(Request["rec_details_tech"]);    
+
+
+//insert the details via for loop
+for(var i=1;i<=no_rows_tech;i++)
+{
+    
+string title_i=Request["title_tech_"+i];
+var time_i=Request["time_tech_"+i];
+var date_i=Request["date_tech_"+i];
+
+var check_tech_sess_details=db.QuerySingle("SELECT * FROM tech_session_details WHERE uid_user=@0 AND row_no=@1",Session["uid"],i);
+if(check_tech_sess_details!=null)
+{
+  //update
+   var update_tech_sess=db.Execute("UPDATE tech_session_details SET title=@0,time=@1,date=@2 WHERE uid_user=@3 AND row_no=@4",title_i,time_i,date_i,Session["uid"],i);   
+}
+
+   else
+   {
+       //insert
+  var insert_colab_tech=db.Execute("INSERT INTO tech_session_details(title,time,date,uid_user,row_no) VALUES(@0,@1,@2,@3,@4)",title_i,time_i,date_i,Session["uid"],i);
+
+     
+   }    
+
+
+    
+
+Response.Redirect("~/u_page_5");
+}
+
+ //<form action="~/function_form/update_rec_page_4" method="post">    
+
+}
+
+
+

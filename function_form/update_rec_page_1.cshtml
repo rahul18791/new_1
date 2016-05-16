@@ -1,0 +1,125 @@
+﻿@{
+var db=Database.Open("Sym_db");    
+string soc_name=Request["soc_name"];
+string type_ins=Request["ins_name"];
+string sym_name=Request["sym_name"];
+string add_sym=Request["address_sym"];
+string city_sym=Request["city_sym"];
+string state_sym=Request["state_sym"];
+string pin_sym=Request["pin_sym"];
+string from_date=Request["from_date"];
+string to_date=Request["to_date"];
+//string last_date=Request["last_sym_org_date"];
+string last_details=Request["last_sym_details"];
+string brief=Request["rel_topic"];
+string lab_area=Request["lab_in_area"];
+string disc_name=Request["disc_name"];
+string last_from_date = Request["last_sym_org_from_date"];
+string last_to_date = Request["last_sym_org_to_date"];
+
+
+
+//delegate details to be inserted in delegates table
+var total_delegates=Request["total_delegates"];
+var national_delegates=Request["national_delegates"];
+var foreign_delegates=Request["foreign_delegates"];
+var reasearch_students=Request["research_students"];
+var any_others=Request["any_others"];
+var delegates_read_papers=Request["delegates_read_papers"];
+var delegates_ta_da=Request["delegates_ta_da"];
+
+
+//end delegate details
+
+//proceeding details
+var proc_pub=Request["pro_pub"];//1-yes , 0-NULL,no
+
+var copies_exp_pub=Request["no_cop_proc"];
+var pro_prc=Request["pro_prc"];  //1-yes ,0-NULL,no
+var price_aprx=Request["pric_proc"];
+//end proceeding details
+
+
+
+///next...
+var uid_user=Session["uid"];
+string desg_user=Request["desg_com_user"];
+string dept=Request["dept_com_user"];
+string address=Request["address"];
+string city_com_user=Request["city_com_user"];
+string state_com_user=Request["state_com_user"];
+string pin_com_user=Request["pin_com_user"];
+string contact_com_user=Request["contact_com_user"];
+//update the user_sym_details table
+var update_user_com_det="UPDATE user_sym_details SET desg=@0, dept=@1, address=@2, state=@3, city=@4, pin_code=@5, phone=@6 WHERE uid=@7";
+var exe_up_com_det=db.Execute(update_user_com_det,desg_user,dept,address,state_com_user,city_com_user,pin_com_user,contact_com_user,uid_user);
+//check if details are present or not
+
+var select_all="SELECT * FROM sym_details_basic WHERE spid=@0";
+var do_ex_all=db.QuerySingle(select_all,uid_user);
+if(do_ex_all==null)
+{
+
+//insert if no records are present    
+var ins_q_basic=db.Execute("INSERT INTO sym_details_basic(soc_name,type_ins_id,title,disc_id,address,city,state,pin,from_date,to_date,last_sym_from_org,spid,last_sym_to_org)"+
+"VALUES(@0,@1,@2,@3,@4,@5,@6,@7,@8,@9,@10,@11,@12)",soc_name,type_ins,sym_name,disc_name,add_sym,city_sym,state_sym,pin_sym,from_date,to_date,last_from_date,uid_user,last_to_date);
+Response.Redirect("~/u_page_1");
+
+}
+else
+{
+//update the sym details basic table   
+var up_sym_basic="UPDATE sym_details_basic SET soc_name=@0, type_ins_id=@1, title=@2, disc_id=@3, address=@4, city=@5, state=@6, pin=@7, from_date=@8, to_date=@9, last_sym_from_org=@10,last_sym_to_org=@11 WHERE spid=@12"; 
+var exe_up_sym_basic=db.Execute(up_sym_basic,soc_name,type_ins,sym_name,disc_name,add_sym,city_sym,state_sym,pin_sym,from_date,to_date,last_from_date,last_to_date,uid_user);
+
+//insert into sym_details_major
+var check_ins_major_sym="SELECT * FROM sym_details_major WHERE sbid = @0";
+var exe_check_ins_major=db.QuerySingle(check_ins_major_sym,do_ex_all.smid);
+if(exe_check_ins_major==null)
+{
+ //insert
+ var insert_major_sym=db.Execute("INSERT INTO sym_details_major(sbid,brief,last_sym_detail,lab_working_area)VALUES(@0,@1,@2,@3)",do_ex_all.smid,last_details,brief,lab_area);   
+}
+else
+{
+//update    
+var update_major_sym=db.Execute("UPDATE sym_details_major SET brief=@0,last_sym_detail=@1,lab_working_area=@2 WHERE sbid=@3 AND sm_id=@4",brief,last_details,lab_area,do_ex_all.smid,exe_check_ins_major.sm_id);
+}
+
+
+//insert into delegates table
+//check if a record is not already present there
+var check_rec_pre="SELECT * FROM delegate_details WHERE sb_id = @0 ";
+var exe_rec_pre=db.QuerySingle(check_rec_pre,do_ex_all.smid);
+if(exe_rec_pre==null)
+{
+var insert_delegates_table=db.Execute("INSERT INTO delegate_details(sb_id,total_delegates,national_delegates,foreign_delegates,reasearch_stu,any_others,dele_read_papers,dele_offr_ta_da)VALUES(@0,@1,@2,@3,@4,@5,@6,@7)",do_ex_all.smid,total_delegates,national_delegates,foreign_delegates,reasearch_students,any_others,delegates_read_papers,delegates_ta_da);
+}
+else
+{
+   //update rather than inserting into the table
+  var update_delegates="UPDATE delegate_details SET total_delegates=@0,national_delegates=@1,foreign_delegates=@2,research_stu=@3,any_others=@4,dele_read_papers=@5,dele_offr_ta_da=@6 WHERE id = @7 AND sb_id = @8";
+  var exe_update_dele=db.Execute(update_delegates,total_delegates,national_delegates,foreign_delegates,reasearch_students,any_others,delegates_read_papers,delegates_ta_da,exe_rec_pre.id,exe_rec_pre.sb_id);  
+
+}
+//insert into proceeding details
+//check if a record is not already present there
+var check_rec_proc="SELECT * FROM proc_details WHERE sb_id = @0";
+var exe_rec_proc=db.QuerySingle(check_rec_proc,do_ex_all.smid);
+if(exe_rec_proc==null)
+{
+var insert_proc_details=db.Execute("INSERT INTO proc_details(sb_id,proc_pub,copies_exp_pub,proc_priced,approx_price)VALUES(@0,@1,@2,@3,@4)",do_ex_all.smid,proc_pub,copies_exp_pub,pro_prc,price_aprx);
+}
+else
+{
+//update rather than inserting into the table
+var update_proc_details="UPDATE proc_details SET proc_pub=@0,copies_exp_pub=@1,proc_priced=@2,approx_price=@3 WHERE id = @4 AND sb_id = @5";
+var exe_update_details=db.Execute(update_proc_details,proc_pub,copies_exp_pub,pro_prc,price_aprx,exe_rec_proc.id,exe_rec_proc.sb_id);    
+
+}
+Response.Redirect("~/u_page_1");
+}
+    
+
+
+}

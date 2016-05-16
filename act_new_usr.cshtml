@@ -1,0 +1,56 @@
+﻿@{
+ 
+var db = Database.Open("Sym_db");
+
+var uid_act=Request["id_act"];
+//get email id for that user
+var get_em=db.QuerySingle("SELECT email FROM user_sym_details WHERE uid = @0",uid_act);
+
+//insert status to 1 to activate new user by checking his id
+if(WebSecurity.UserExists(get_em.email))
+{
+
+   
+    
+var update_log="UPDATE login_auth SET status = @0 WHERE uid = @1 ";
+
+var do_exe=db.Execute(update_log,1,uid_act);
+
+//insert only id in sym_details basic
+var insert_id_sym=db.Execute("INSERT INTO sym_details_basic(spid)VALUES(@0)",uid_act);
+
+var id_inserted=db.QuerySingle("SELECT smid FROM sym_details_basic WHERE spid=@0",uid_act);
+
+
+//insert into proc_detais and delegates table and sym_details_major
+var insert_id_prop=db.Execute("INSERT INTO proc_details(sb_id)VALUES(@0)",id_inserted.smid);
+var insert_id_dele=db.Execute("INSERT INTO delegate_details(sb_id)VALUES(@0)",id_inserted.smid);
+var insert_id_major=db.Execute("INSERT INTO sym_details_major(sbid)VALUES(@0)",id_inserted.smid);
+//insert id in u_c details
+var insert_id_u_c=db.Execute("INSERT INTO u_c_details(uid_user)VALUES(@0)",uid_act);
+var insert_id_u_org=db.Execute("INSERT INTO org_details(uid_user)VALUES(@0)",uid_act);
+var insert_id_u_exe=db.Execute("INSERT INTO ex_auth_det(uid_user)VALUES(@0)",uid_act);
+var insert_id_u_head = db.Execute("INSERT INTO head_ins_details(uid)VALUES(@0)", uid_act);
+var insert_id_fn_1=db.Execute("INSERT INTO income_finance_details_1(user_id)VALUES(@0)",uid_act);
+var insert_id_fn_2=db.Execute("INSERT INTO income_finance_details_2(user_id)VALUES(@0)",uid_act);
+//insert id in prv_neft_details
+var insert_id_prv_neft = db.Execute("INSERT INTO prv_grant_details(uid_user,row_no)VALUES(@0,@1)", uid_act,1);
+
+var insert_app_san_id = db.Execute("INSERT INTO app_sanc(uid)VALUES(@0)", uid_act);
+var insert_app_deff_id = db.Execute("INSERT INTO app_deff(uid)VALUES(@0)", uid_act);
+var insert_app_reg_id = db.Execute("INSERT INTO app_regret(uid)VALUES(@0)", uid_act);
+if(do_exe!=null)
+{
+    
+Response.Redirect("~/login?st_auth=d_o_k");
+
+}
+else
+{
+    
+Response.Redirect("~/register");
+}
+} 
+    
+}
+

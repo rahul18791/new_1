@@ -1,0 +1,23 @@
+﻿@{
+var db=Database.Open("Sym_db");
+
+//chekc if values on the user id exists
+var check_finance_tab_3=db.QuerySingle("SELECT user_id FROM income_finance_details_2 WHERE user_id=@0",Session["uid"]);
+if(check_finance_tab_3!=null)
+{
+//update    
+var update_finance=db.Execute("UPDATE income_finance_details_2 SET reg_fee=@0,sale_proc_pub=@1,any_other=@2 WHERE user_id=@3",Request["f_val_1"],Request["f_val_2"],Request["f_val_3"],Session["uid"]);
+}
+else
+{
+//insert in the database     
+var insert_db=db.Execute("INSERT INTO income_finance_details_2(user_id,reg_fee,sale_proc_pub,any_other)"+
+" VALUES(@0,@1,@2,@3)",Session["uid"],Request["f_val_1"],Request["f_val_2"],Request["f_val_3"]);
+}
+
+    <img src="~/images/tick.png" height="20" width="20" alt="tick"/>
+
+ 
+    
+}
+

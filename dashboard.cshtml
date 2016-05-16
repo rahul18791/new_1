@@ -1,0 +1,67 @@
+﻿@{
+  var uid=Session["uid"];  
+ var db = Database.Open("Sym_db");  
+
+
+
+ 
+}
+@{ 
+  //get email and other  details in this id 
+   
+var get_details="SELECT * FROM user_sym_details WHERE uid=@0";
+var exe_det=db.QuerySingle(get_details,uid);
+
+
+   }
+
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width,initial-scale=1.0">
+        <script src="~/js/jquery-2.js"></script>
+        
+        <script type="text/javascript" src="~/js/bootstrap.min.js"></script>
+       <link href="~/bootstrap.min.css" rel="stylesheet">
+      <link href="~/dashboard.css" rel="stylesheet">
+        <script type="text/javascript" src="~/js/page.js"></script> 
+        <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+        <script src="js/highcharts.js"></script>
+<script src="js/exporting.js"></script>
+        <script>
+$(document).ready(function() {
+        function disableBack() { window.history.forward() }
+
+        window.onload = disableBack();
+        window.onpageshow = function(evt) { if (evt.persisted) disableBack() }
+    });
+    </script>
+        <script>
+    $(document).ready(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+        </script>
+
+    <title>
+   @Page.Title- CSIR
+    </title>
+    <link rel="shortcut icon" href="~/images/csir_logo.ico"/>
+
+       
+    </head> 
+<body> 
+   
+@RenderPage("header.cshtml") <!--HEADER(CONSTANT)-->
+
+<!--FOOTER(CONSTANT)-->
+
+@RenderBody()
+   
+    
+</body>
+     
+</html>   
+
+ 

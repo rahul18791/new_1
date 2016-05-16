@@ -1,0 +1,20 @@
+﻿@{
+var db=Database.Open("Sym_db");  
+    string fname_user=Request["fname_com_user"];
+    string mname_user = Request["mname_com_user"];
+    string lname_user = Request["lname_com_user"];
+string desg=Request["desg_com_user"];
+string dept=Request["dept_com_user"];
+string address_user=Request["address_com_user"];
+string city=Request["city_com_user"];
+string state=Request["state_com_user"];
+var pin_user=Request["pin_com_user"];
+var contact_user=Request["contact_com_user"];
+//updte user_sym_details for the info left
+var update_user_sym_details_two=db.Execute("UPDATE user_sym_details SET desg=@0,dept=@1,address=@2,city=@3,state=@4,pin_code=@5,phone=@6,first_name=@7,middle_name=@8,last_name=@9 WHERE uid=@10",desg,dept,address_user,city,state,pin_user,contact_user,fname_user,mname_user,lname_user,Session["uid"]);
+    if(update_user_sym_details_two!=null)
+    {
+        
+        Response.Redirect("~/u_page_2");
+    }
+}

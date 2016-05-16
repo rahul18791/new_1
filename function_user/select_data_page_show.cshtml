@@ -1,0 +1,409 @@
+﻿@{
+ var db=Database.Open("Sym_db");   
+var val_page_show=Request["data_to_show_val"];
+var get_org_details=db.QuerySingle("SELECT * FROM org_details WHERE uid_user=@0",Session["uid"]);
+if(val_page_show=="a")
+{
+   
+     <h4 style="text-align: center">Organizer Details</h4>
+<form action="function_form/update_rec_page_4" method="post">  
+
+    @{
+    var gen_title = get_org_details.gender;
+    string gen = "";
+
+
+    if (Convert.ToInt32(gen_title) == 1)
+    {
+        gen = "Mr";
+    }
+    else if (Convert.ToInt32(gen_title) == 0)
+    {
+        gen = "Ms.";
+    }
+    else if (Convert.ToInt32(gen_title) == 10)
+    {
+        gen = "Dr.";
+    }
+    else if (Convert.ToInt32(gen_title) == 3)
+    {
+        gen = "Prof.";
+    }
+    else if (Convert.ToInt32(gen_title) == 4)
+    {
+        gen = "Mrs.";
+    }
+
+    }
+
+
+<div>
+
+    <label>Title</label>
+    <select name="gen_title_org">
+        @if(Convert.ToInt32(get_org_details.gender)!=99)
+        {
+            <option value="@get_org_details.gender">@gen</option>
+    <option value="1">Mr</option>
+    <option value="0">Ms</option>
+    <option value="10">Dr</option>
+    <option value="3">Prof.</option>
+    <option value="4">Mrs.</option>
+
+
+        }
+        else
+        {
+       <option value="99">-Select-</option>
+        <option value="1">Mr</option>
+        <option value="0">Ms</option>
+        <option value="10">Dr</option>
+        <option value="3">Prof.</option>
+        <option value="4">Mrs.</option>
+        }
+    </select>
+
+    </div>
+    
+    
+    <div class="col-xs-4">
+        
+        <input type="text" readonly style="max-width:40px" value="@gen"  title="title_user"/><input type="text" value="@get_org_details.name"  name="org_name_user"  class="" placeholder="Name" title="Name">
+    
+    </div>
+    <div class="col-xs-4">
+       
+   <input type="text" name="org_desg_user" value="@get_org_details.desg"   class="form-control" placeholder="Desgination" title="Designation">
+        </div>
+     <div class="col-xs-4">
+         
+         <input type="text" name="org_dept_user" value="@get_org_details.dept"   class="form-control" placeholder="Department(if any)" title="Department">
+     </div>
+           <div class="col-xs-12">
+    
+       <input type="text"  class="form-control" value="@get_org_details.ins_name" placeholder="Institute Name" title="institute name" name="org_ins_user">
+    </div>
+  <div class="col-xs-12">
+   <textarea class="form-control" rows="3" name="org_address_user" placeholder="Address For Communication" title="Address">@get_org_details.address</textarea>
+      </div>
+    <div class="col-xs-4">
+       <input type="text" name="org_city_user" value="@get_org_details.city"  class="form-control" placeholder="City" title="city">
+        </div>
+        <div class="col-xs-4">
+       <input type="text" name="org_state_user" value="@get_org_details.state" class="form-control" placeholder="State" title="state"> 
+            </div>
+            <div class="col-xs-4">
+       <input type="text" maxlength="6" onkeyup="pin_check(this.value,'org_pin_user')" id="org_pin_user" name="org_pin_user" value="@get_org_details.pin_code" class="form-control" placeholder="Pin" title="Pin Code">
+                </div>
+                <div class="col-xs-4">
+                    <input type="text" name="org_contact_user" id="org_contact_user" value="@get_org_details.phone_std" onkeyup="std_diff(this.value)" class="form-control" placeholder="Contact No with STD code" title="Contact no. with STD">
+                    </div>
+                    <div class="col-xs-4">
+       <input type="text" name="org_mob_user" value="@get_org_details.mobile" class="form-control" placeholder="Mobile Number" title="Mobile Number">
+                        </div>
+                        <div class="col-xs-4">
+       <input type="email" name="org_email_user" value="@get_org_details.email_id" class="form-control" placeholder="Email-id" title="Email-id">
+                            </div>
+<div class="col-xs-4">
+    <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+</form>
+
+}
+else if(val_page_show=="b")
+{
+  <b>Indicate if the Scientific Society is organizing the Symposium/ Seminar/ Conference/
+Workshop etc in collaboration with any Government Department, University Department,
+Registered Society, or Autonomous Body.(If yes, these may be named):</b> 
+
+var get_details_colab=db.QuerySingle("SELECT row_no FROM collab_details WHERE id_user=@0",Session["uid"]);
+var get_max=db.QueryValue("SELECT MAX(row_no) FROM collab_details WHERE id_user=@0",Session["uid"]);
+var get_details_c_1="SELECT * FROM collab_details WHERE id_user=@0";
+
+var value_c=get_max;
+
+
+<form action="~/function_form/insert_collab_details" method="post">
+
+<table class="table table-hover">
+    <thead style="color: #164c8f">
+<tr>
+<th>S.no</th>
+<th>Name</th>
+<th>Type of Organization</th>
+<th>Add/Remove rows</th>
+</tr>
+</thead>
+    <tbody> 
+@if(get_details_colab!=null)
+{
+   
+  
+int i=0;
+
+
+foreach(var row in db.Query(get_details_c_1,Session["uid"]))
+{
+
+     
+<tr id="@(i+=1)_row">
+<td>@(i).</td>
+
+   
+
+ <td><input type="text" placeholder="Name" name="name_colab_details_@i" value="@row.name"></td>
+<td><input type="text" placeholder="Type of Organization" name="colab_org_type_@i" value="@row.org_type"><input type="hidden" value="@get_details_colab" name="row_max_val"></td>
+   @{if(value_c==i)
+   {
+     
+                                
+
+    <td id="add_@(i)_row"><input type="button" onclick="add_rows_table(@(value_c+=1));" value="Add"><input type="hidden" id="rec_colb_details" value="@i" name="rec_colb_details"></td>
+  
+   }
+   else
+   {
+      
+     
+   }
+   }
+</tr>
+
+
+}
+}
+
+    else
+    {
+        
+     
+<tr id="1_row">
+<td>1.</td>
+    
+
+<td><input type="text" placeholder="Name" name="name_colab_details_1"></td>
+<td><input type="text" placeholder="Type of Organization" name="colab_org_type_1"></td>
+
+<td id="add_1_row"><input type="button" onclick="add_rows_table(2)" value="Add"><input type="hidden" id="rec_colb_details" value="1" name="rec_colb_details"></td>
+    </tr>
+    
+    }
+    </tbody>
+</table>
+    <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+
+}
+else if(val_page_show=="c")
+{
+var id_session=Session["uid"];
+
+//check if value is present in the table or not   
+var check_spon_details=db.QuerySingle("SELECT * FROM spon_details WHERE uid_user=@0",id_session); 
+//get the max row value
+var get_max_spon=db.QueryValue("SELECT MAX(row_no) FROM spon_details WHERE uid_user=@0",id_session);
+var do_query_spon="SELECT * FROM spon_details WHERE uid_user=@0";
+
+<b>Details of other R&D Organizations / Other agencies who have been approached for sponsoring the proposed
+activity:</b>
+<form action="~/function_form/insert_spon_details" method="post">
+<table class="table table-hover" id="table-spon">
+    <thead style="color: #164c8f">
+<tr>
+<th>S.no</th>
+<th>Name of the agency/R&D Organization</th>
+<th>Grant Requested(Rs.)</th>
+<th>Grant Received(Rs.)</th>
+<th>Grant Expected(Rs.)</th>
+<th>Items for which grants have been requested</th>
+<th>Add/Remove rows</th>
+    
+
+</tr>
+</thead>
+    
+<tbody>
+@if(check_spon_details==null)
+{
+ <tr id="1_row_c">
+<td>1.</td>
+<td><input type="text" placeholder="Name" name="name_spon_1"></td>
+<td><input type="number" placeholder="Grant Requested(Rs.)" name="grant_rq_1"></td>
+<td><input type="number" placeholder="Grant Received(Rs.)" name="grant_rc_1"></td>
+<td><input type="number" placeholder="Grant Expected(Rs.)" name="grant_exp_1"></td>
+<td><input type="text" placeholder="Items" multiple name="items_grant_1"></td>
+
+<td id="add_1_row_c"><img src="images/add.png" height="20px" width="20px" style="cursor: pointer" onclick="add_rows_table_c(2,@id_session);" alt="add"><input type="hidden" id="rec_spon_details" value="1" name="rec_spon_details"></td>
+</tr>   
+}
+    else
+    {
+      foreach(var row_spon in db.Query(do_query_spon,id_session))
+      {
+       <tr id="@(row_spon.row_no)_row_c">
+<td>@(row_spon.row_no).</td>
+<td><input type="text" placeholder="Name" name="name_spon_@row_spon.row_no" value="@row_spon["name"]"></td>
+<td><input type="number" placeholder="Grant Requested(Rs.)" name="grant_rq_@row_spon.row_no" value="@row_spon["grant_rq"]"></td>
+<td><input type="number" placeholder="Grant Received(Rs.)" name="grant_rc_@row_spon.row_no" value="@row_spon["grant_rcv"]"></td>
+<td><input type="number" placeholder="Grant Expected(Rs.)" name="grant_exp_@row_spon.row_no" value="@row_spon["grant_exp"]"></td>
+<td><input type="text" placeholder="Items" multiple name="items_grant_@row_spon.row_no" value="@row_spon["items"]"></td>
+           @if(row_spon.row_no==get_max_spon)
+           {
+ <td id="add_@(row_spon.row_no)_row_c"><img src="images/add.png" height="20px" width="20px" style="cursor: pointer" onclick="add_rows_table_c(@(get_max_spon+=1),@id_session);" alt="add"><img src="images/cross.png" height="20px" width="20px" style="cursor: pointer" onclick="remove_rows_spon(@(row_spon.row_no),@id_session);" alt="delete"><input type="hidden" id="rec_spon_details" value="@row_spon.row_no" name="rec_spon_details"></td>              
+           }
+           else
+           {
+               var row_val=row_spon.row_no;
+<td style="display: none" id="add_@(row_val)_row_c"><img src="images/add.png" onclick="add_rows_table_c(@get_max_spon,@id_session)" height="20px" width="20px" style="cursor: pointer" alt="add"><img src="images/cross.png" height="20px" width="20px" style="cursor: pointer" onclick="remove_rows_spon(@(row_spon.row_no),@id_session);" alt="delete"></td> 
+           }
+
+</tr>     
+      }  
+
+
+    }
+
+
+</tbody>
+</table>
+    <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+
+}
+else if (val_page_show == "e")
+{
+    //check and get the data for head of the institution
+    var get_head_ins_details = db.QuerySingle("SELECT * FROM head_ins_details WHERE uid=@0",Session["uid"]);
+    
+    <h4 style="text-align: center">Head of the Institution/Organization Details</h4>
+    <form action="function_form/update_rec_page_4_pt_3" method="post">
+        <div>
+
+            <label>Title</label>
+            <select name="gen_title_head">
+                <option value="99">-Select-</option>
+                <option value="1">Mr</option>
+                <option value="0">Ms</option>
+                <option value="10">Dr</option>
+                <option value="20">Prof.</option>
+            </select>
+
+        </div>
+
+
+
+
+        <div class="col-xs-4">
+
+            <input type="text" value="@get_head_ins_details.name" name="head_name_user" class="form-control" placeholder="Name" title="Name">
+
+        </div>
+        <div class="col-xs-4">
+
+            <input type="text" name="head_desg_user" value="@get_head_ins_details.desg" class="form-control" placeholder="Desgination" title="Designation">
+        </div>
+        <div class="col-xs-4">
+
+            <input type="text" name="head_dept_user" value="@get_head_ins_details.dept" class="form-control" placeholder="Department(if any)" title="Department">
+        </div>
+        <div class="col-xs-12">
+
+            <input type="text" class="form-control" value="@get_head_ins_details.ins_name" placeholder="Institute Name" title="institute name" name="head_ins_user">
+        </div>
+        <div class="col-xs-12">
+            <textarea class="form-control" rows="3" name="head_address_user" placeholder="Address For Communication" title="Address">@get_head_ins_details.address</textarea>
+        </div>
+        <div class="col-xs-4">
+            <input type="text" name="head_city_user" value="@get_head_ins_details.city" class="form-control" placeholder="City" title="city">
+        </div>
+        <div class="col-xs-4">
+            <input type="text" name="head_state_user" value="@get_head_ins_details.state" class="form-control" placeholder="State" title="state">
+        </div>
+        <div class="col-xs-4">
+            <input type="text" maxlength="6" onkeyup="pin_check(this.value,'org_pin_user')" id="org_pin_user" name="head_pin_user" value="@get_head_ins_details.pin_code" class="form-control" placeholder="Pin" title="Pin Code">
+        </div>
+        <div class="col-xs-4">
+            <input type="text" name="head_contact_user" value="@get_head_ins_details.phone" class="form-control" placeholder="Contact No with STD code" title="Contact no. with STD">
+        </div>
+        <div class="col-xs-4">
+            <input type="text" name="head_mob_user" value="@get_head_ins_details.mobile" class="form-control" placeholder="Mobile Number" title="Mobile Number">
+        </div>
+        <div class="col-xs-4">
+            <input type="email" name="head_email_user" value="@get_head_ins_details.email_id" class="form-control" placeholder="Email-id" title="Email-id">
+        </div>
+        <div class="col-xs-4">
+            <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+    </form>
+
+}
+
+else
+{
+    <h4 style="color:red">* Executive authority details and Organizer details should not be the same else application will be rejected directly </h4>
+    var get_exe_details = db.QuerySingle("SELECT * FROM ex_auth_det WHERE uid_user=@0", Session["uid"]);
+    <h4 style="text-align: center">Executive Authority Details</h4>
+    
+<form action="function_form/update_rec_page_4_pt_2" method="post">  
+
+<div>
+    <label>Title</label>
+    <select name="gen_title_exe">
+       <option value="99">-Select-</option>
+        <option value="1">Mr</option>
+        <option value="0">Ms</option>
+        <option value="10">Dr</option>
+        <option value="3">Prof.</option>
+        <option value="10">Mrs.</option>
+    </select>
+
+    </div>
+   
+   
+   
+
+    <div class="col-xs-4">
+   
+   <input type="text"  name="exe_name_user" class="form-control" placeholder="Name" title="Name" value="@get_exe_details.name">
+    
+    </div>
+    <div class="col-xs-4">
+       
+   <input type="text" name="exe_desg_user"    class="form-control" placeholder="Desgination" title="Designation" value="@get_exe_details.desg">
+        </div>
+     <div class="col-xs-4">
+         
+         <input type="text" name="exe_dept_user"   class="form-control" placeholder="Department(if any)" title="Department" value="@get_exe_details.dept">
+     </div>
+           <div class="col-xs-12">
+    
+       <input type="text"  class="form-control"  placeholder="Institute Name" title="institute name" name="exe_ins_user" value="@get_exe_details.ins_name">
+    </div>
+  <div class="col-xs-12">
+   <textarea class="form-control" rows="3" name="exe_address_user" placeholder="Address For Communication" title="Address">@get_exe_details.address</textarea>
+      </div>
+    <div class="col-xs-4">
+       <input type="text" name="exe_city_user"  class="form-control" placeholder="City" title="city" value="@get_exe_details.city">
+        </div>
+        <div class="col-xs-4">
+       <input type="text" name="exe_state_user" class="form-control" placeholder="State" title="state" value="@get_exe_details.state"> 
+            </div>
+            <div class="col-xs-4">
+       <input type="text" name="exe_pin_user" maxlength="6" onkeyup="pin_check(this.value,'exe_pin_user');" id="exe_pin_user" min="6" class="form-control" placeholder="Pin" title="Pin Code" value="@get_exe_details.pin">
+                </div>
+                <div class="col-xs-4">
+       <input type="text" name="exe_contact_user" class="form-control" placeholder="Contact No with STD code" title="Contact no. with STD" value="@get_exe_details.contact">
+                    </div>
+                    <div class="col-xs-4">
+       <input type="text" name="exe_mob_user"  class="form-control" placeholder="Mobile Number" title="Mobile Number" value="@get_exe_details.mobile">
+                        </div>
+                        <div class="col-xs-4">
+       <input type="email" name="exe_email_user"  class="form-control" placeholder="Email-id" title="Email-id" value="@get_exe_details.email_id">
+                            </div>
+<div class="col-xs-4">
+    <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+    </form>    
+}
+    
+}

@@ -1,0 +1,1492 @@
+﻿@{
+   var db=Database.Open("Sym_db"); 
+   if(Session["uid"]!=null)
+          {
+<div class="container-fluid">
+      <div class="row">
+       
+          
+    
+              @if(Convert.ToInt32(Session["priv"])==0)
+              {
+                  Session["uid"] = ((int?)Session["uid"] ?? 0);
+                  var id_to_use=Session["uid"];
+                   <div class="col-sm-3 col-md-2 sidebar">
+                     <ul class="nav nav-sidebar">
+
+            <li class="active"><a href="~/dashboard_layout">Application Status</a></li>
+            
+         
+      
+            <li><a href="~/u_page_1">Conference/Seminar/Workshop Details</a></li>
+            <li><a href="~/u_page_2">Contact Person Details</a></li>
+           @* <li><a href="~/u_page_3">Utilization Certificate Authority Details</a></li>*@
+            <li><a href="~/u_page_4">Organizer Sponsorers Collaborators Details</a></li>
+            <li><a href="~/u_page_5">Speakers and Technical Sessions Details</a></li>
+            <li><a href="~/u_page_6">Previous Grant/NEFT Details</a></li>
+            <li><a href="~/u_page_7">Expenditure Income Finance Details</a></li>
+ 
+
+                         </ul>
+                       </div>
+
+    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+          <h3 class="page-header">@Page.Title</h3>
+     
+        @if ((Request.FilePath) == "/csir-final.com/u_page_1")//if we are in page 1 of the application
+        {<h4 style="color: #6b0909"><i>&#42;Please Keep Saving your information you provide</i></h4>
+           var sel_all_details_basic="SELECT * FROM sym_details_basic WHERE spid=@0";
+           var exe_all_basic=db.QuerySingle(sel_all_details_basic,id_to_use); 
+          string nameinsti="";
+            
+           //get details
+           var ins_name_sel="SELECT type_ins.name_ins As insti_name,type_ins.ins_id As insti_id FROM type_ins INNER JOIN sym_details_basic ON type_ins.ins_id=sym_details_basic.type_ins_id WHERE sym_details_basic.spid=@0";
+           var exe_ins_name=db.QuerySingle(ins_name_sel,id_to_use);
+           if(exe_ins_name!=null)
+           {
+            nameinsti=exe_ins_name.insti_name;  
+           }
+          
+       
+          
+           <div style="padding: 5px">
+           <div id="head_1" style="float: left;border: solid;border-color: #610a0a;background-color: #79ab38;cursor: pointer" onclick="show_proc_det(1);"><h5>Conference Details</h5></div>
+            <div id="head_2" style="float: left;border: solid;border-color: #610a0a;background-color: #e3d5d5;cursor: pointer" onclick="show_proc_det(2);"><h5>Proceeding Details</h5></div>
+           <div id="head_3" style="float: left;border: solid;border-color: #610a0a;background-color: #e3d5d5;cursor: pointer" onclick="show_proc_det(3);"><h5>Venue Details</h5></div>
+        <div id="head_4" style="float: left;border: solid;border-color: #610a0a;background-color: #e3d5d5;cursor: pointer" onclick="show_proc_det(4);"><h5>Delegate Number Details</h5></div>
+               </div>
+<br><br>
+
+           //form for page 1 application
+           <form action="~/function_form/update_rec_page_1" method="post">
+               <div style="display: block" id="conf_1">
+               <div class="form-group">
+    <label for="exampleInputFile" style="color: #144b98">(1)Period Of the Symposium/Conference/Seminar/Workshop etc.</label>
+    <br>
+     <b> From:</b><input type="date" data-date-format="DD-MM-YYYY" name="from_date" value="@exe_all_basic.from_date">
+     
+     <b> To:</b><input type="date" name="to_date" value="@exe_all_basic.to_date">
+
+  </div>
+<hr>
+                   <div class="form-group">
+                       <label style="color: #144b98">(2)Name of the Society/Academic Institution/Organization under whose auspices the Symposium/Seminar/ Conference/Workshop etc. is proposed to be organized. A copy of each of the following may be enclosed in case of a Society-Registration Certificate; Memorandum of Association;Audited statement of accounts of the previous Year </label>
+<input type="text" name="soc_name" id="soc_name" class="form-control" value="@exe_all_basic.soc_name">
+                   </div>
+                   
+  <div class="form-group">
+    <label for="exampleInputFile" style="color: #144b98">(3)Title/Name of the Symposium/Seminar/Conference/Workshop etc.</label>
+      <input type="text" name="sym_name" id="sym_name" value="@exe_all_basic.title" class="form-control" placeholder="Sym name">
+
+  </div>
+<hr>
+               <div class="form-group">
+    <label for="exampleInputFile" style="color: #144b98">(4)When Was a Symposium/Seminar/Conference/Workshop etc. on the same topic organised last:</label>
+    <br />
+    <strong>From:</strong> <input type="date" name="last_sym_org_from_date" value="@exe_all_basic.last_sym_from_org">
+     <strong>To:</strong><input type="date" name="last_sym_org_to_date" value="@exe_all_basic.last_sym_to_org">
+   
+  </div>
+               <hr>
+                   @{
+
+var major_data_fetch=db.QuerySingle("SELECT * FROM sym_details_major WHERE sbid = @0",exe_all_basic.smid);
+}
+ <div class="form-group">
+ <label style="color: #144b98">(5)Specify the last Symposium/Seminar/Conference/Workshop etc. organized by the scientific Society/Academic Institution, 
+what were its recommendations and what follow-up-steps have been taken by the Society/Academic Institution/Organization(Including
+involvement<br> of the Scientist of CSIR Laboratories) in implementing the recommendations and also reason out with appropriate justification
+ why the<br> CSIR should support the present Symposium/Seminar/Conference/Workshop etc:(600 words only)</label>   
+     <textarea class="form-control" maxlength="600" name="last_sym_details">@major_data_fetch.last_sym_detail</textarea> 
+ </div>
+<hr>
+                <div class="form-group">
+    <label for="exampleInputEmail1" style="color: #144b98">(6)Indicate Briefly Within Few lines the relevance and scientific /technological importance of organizing
+    the Symposium/Seminar/Conference/Workshop etc. in the context of the present day national needs:</label>
+<textarea class="form-control" name="rel_topic">@major_data_fetch.brief</textarea>
+  </div>
+                   <!--get details-->
+        <div class="form-group">
+    <label style="color: #144b98">(7)Type of the Institution/Body</label>
+            
+         @{var get_details_ins="SELECT * FROM type_ins" ;
+           var get_disc_name="SELECT * FROM discipline_all";
+
+           <select class="form-control" name="ins_name" onchange="show_for_other_type(this.value)">
+               @if(nameinsti!="")
+               {
+                 <option value="@exe_ins_name.insti_id">@nameinsti</option>   
+               }
+               else
+               {
+                 <option value="0">-Select-</option>   
+               }
+              
+               @foreach(var row_type in db.Query(get_details_ins)) {
+
+                <option value="@row_type.ins_id">@row_type.name_ins</option>
+                
+                }
+                </select>
+               }
+            <span id="show_oth_type"></span>
+        </div>   
+                   <div class="form-group">
+                       <label style="color: #144b98">(8)PI indicate which of the CSIR lab is working in the same area of CONFERENCE/SEMINAR/WORKSHOP etc.</label>
+                      <input type="text" name="lab_in_area" value="@(major_data_fetch.lab_working_area)" class="form-control">
+                   </div>  
+                   <!--get all the name of the disciplines in in the table discipline_all--> 
+                  <!--check details if present then show in option-->
+                   @{var check_disc_details=db.QuerySingle("SELECT discipline_all.name_d,discipline_all.d_id FROM discipline_all INNER JOIN sym_details_basic ON discipline_all.d_id=sym_details_basic.disc_id WHERE sym_details_basic.spid=@0",Session["uid"]);
+                     
+                     }
+                   <div class="form-group">
+<label style="color: #144b98">(9)Mention discipline in which it falls</label>
+                   <select class="form-control" name="disc_name">
+                       @if(check_disc_details!=null)
+                       {
+                        <option value="@check_disc_details.d_id">@check_disc_details.name_d</option>   
+                       }
+                       else
+                       {
+                           <option value="0">--SELECT--</option>
+                           }
+                     @foreach(var row_disc in db.Query(get_disc_name))
+                      {
+
+                       <option value="@row_disc.d_id">@row_disc.name_d</option>
+}
+                      
+                       </select>     
+                   </div>
+                     
+</div>
+               <div style="display: none" id="conf_2">
+  <!--Check proceeding has a true value-->
+@{ var check_proc_val="SELECT * FROM proc_details INNER JOIN sym_details_basic ON sym_details_basic.smid = proc_details.sb_id WHERE sym_details_basic.spid=@0";
+   
+   var ece_proc_query=db.QuerySingle(check_proc_val,Session["uid"]);
+  
+
+                        
+      if(Convert.ToInt32(ece_proc_query.proc_pub)==1)
+   {
+ <div class="form-group">
+<label>Will the proceedings be published?</label>
+   
+   <div class="radio"><label><input type="radio" checked name="pro_pub" id="pro_pub" value="1" onclick="check_show_val(1)">Yes</label></div>
+
+    <div class="radio"><label><input type="radio" name="pro_pub" id="pro_pub" value="0" onclick="check_show_val(0)">No</label></div>
+
+
+
+</div>
+               <hr>
+   
+               <div class="form-group">
+                   <label>How many copies are expected to be published:</label>
+                   <input type="number" name="no_cop_proc" value="@ece_proc_query.copies_exp_pub" min="0">
+                   </div>
+      if(Convert.ToInt32(ece_proc_query.proc_priced)==1)
+      {        
+
+<div class="form-group">
+<label>Will the proceedings be priced?</label>
+   <div class="radio"><label><input type="radio" name="pro_prc" checked value="1" onclick="show_text_price(1)">Yes</label></div>
+    <div class="radio"><label><input type="radio" name="pro_prc" value="0" onclick="show_text_price(0)">No</label></div>
+   <label>Approximate price to be Charged?</label><input type='number' name='pric_proc' min='0' value='@ece_proc_query.approx_price'>
+</div>
+  }
+  else
+  {
+   <div class="form-group">
+<label>Will the proceedings be priced?</label>
+   <div class="radio"><label><input type="radio" name="pro_prc" value="1" onclick="show_text_price(1)">Yes</label></div>
+    <div class="radio"><label><input type="radio" checked name="pro_prc" value="0" onclick="show_text_price(0)">No</label></div>
+    <span id="show_price_box"></span>
+</div>   
+  }  
+  
+}
+else
+{
+ <div class="form-group">
+<label>Will the proceedings be published?</label>
+   
+   <div class="radio"><label><input type="radio" name="pro_pub" id="pro_pub" value="1" onclick="check_show_val(1)">Yes</label></div>
+
+    <div class="radio"><label><input type="radio" checked name="pro_pub" id="pro_pub" value="0" onclick="check_show_val(0)">No</label></div>
+
+    
+          
+
+     
+
+</div>
+               <hr>
+    <div style="display: none" id="show_proc_data">
+               <div class="form-group">
+                   <label>How many copies are expected to be published:</label>
+                   <input type="number" name="no_cop_proc" min="0">
+                   </div>
+              
+
+<div class="form-group">
+<label>Will the proceedings be priced?</label>
+   <div class="radio"><label><input type="radio" name="pro_prc" value="1" onclick="show_text_price(1)">Yes</label></div>
+    <div class="radio"><label><input type="radio" name="pro_prc" value="0" onclick="show_text_price(0)">No</label></div>
+    <span id="show_price_box"></span>
+</div>
+    </div>    
+
+}
+   }
+
+
+
+   
+  </div>
+               <hr>
+
+<div style="display: none" id="conf_3">
+    <h4>Venue of the Symposium/Conference/Workshop etc.</h4>
+ <div class="form-group">
+    <label for="exampleInputFile">Address</label>
+      <textarea class="form-control" rows="3" name="address_sym">@exe_all_basic.address</textarea>
+     <hr>
+     <label>City</label>
+      <input type="text" name="city_sym" id="city_sym" class="form-control" value="@exe_all_basic.city" placeholder="City" title="Enter city">
+     <label>State</label>
+       <input type="text" name="state_sym" id="state_sym" class="form-control" value="@exe_all_basic.state" placeholder="State" title="Enter State">
+     <label>Pin Code</label>
+       <input type="text" onkeyup="pin_check(this.value,'pin_sym');" name="pin_sym" maxlength="6" id="pin_sym" class="form-control" value="@exe_all_basic.pin" placeholder="Pin Code" title="Enter Pin code">
+
+  </div>
+<hr>
+</div>
+           <!--query to bring details of delegates-->
+@{
+var q_dele_query="SELECT * FROM delegate_details INNER JOIN sym_details_basic ON sym_details_basic.smid = delegate_details.sb_id WHERE sym_details_basic.spid=@0";
+var ece_dele_query=db.QuerySingle(q_dele_query,Session["uid"]);
+}
+ <div style="display: none" id="conf_4">
+     <h4>How many total delegates are expected to participate indicating the number of national, foreign delegates, reasearch students etc.</h4>
+     <table>
+<tr><td>Total Delagates:</td><td><input type="number" name="total_delegates" id="tot_d" readonly="" value="@ece_dele_query.total_delegates"/></td></tr>
+<tr><td>National Delagates:</td><td><input type="number" name="national_delegates" id="nat_d" value="@ece_dele_query.national_delegates" onblur="delegates_value_enter(this.value)"/></td></tr>
+<tr><td>Foreign Delagates:</td><td><input type="number" name="foreign_delegates" id="for_d" value="@ece_dele_query.foreign_delegates" onblur="delegates_value_enter(this.value)"/></td></tr>
+<tr><td>Reasearch Students:</td><td><input type="number" name="research_students" id="rs_st" value="@ece_dele_query.research_stu"  onblur="delegates_value_enter(this.value)"/></td></tr>
+<tr><td>Any Others:</td><td><input type="number" name="any_others" id="any_othr" value="@ece_dele_query.any_others" onblur="delegates_value_enter(this.value)"/></td></tr>
+<tr><td>How many Delegates would read papers:</td><td><input type="number" id="dele_papers" value="@ece_dele_query.dele_read_papers" name="delegates_read_papers" onblur="dele_paper_ta_da()"/></td></tr>
+<tr><td>How many Delegates are being offered TA/DA:</td><td><input type="number" id="dele_ta_da" value="@ece_dele_query.dele_offr_ta_da" name="delegates_ta_da" onblur="dele_paper_ta_da()"/></td></tr>
+    
+         </table>
+     
+
+ 
+               <hr>
+</div>
+
+  <button class="btn btn-primary">Save</button>
+
+</form> 
+
+<script type="text/javascript">
+    $('.nav-sidebar li:nth-child(1)').removeClass('active');
+    $('.nav-sidebar li:nth-child(2)').addClass('active');
+
+   
+        </script> 
+
+        }
+        else if ((Request.FilePath) == "/csir-final.com/u_page_2")//if we are in page 2 of the application
+        {
+         <form action="~/function_form/update_rec_page_2" method="post">
+        <!--      <div class="form-group">
+    <label for="exampleInputEmail1">Name Of Society/Academic Institution</label>
+    <input type="text" class="form-control" id="soc_name" name="soc_name" value="" placeholder="Society/Institute name">
+  </div>
+               <hr>
+
+  <div class="form-group">
+    <label for="exampleInputPassword1">Type Of Institution/Body</label>
+   <select class="form-control" name="ins_name" id="ins_name_val" onchange="show_sele_val()">
+  <option>--Select (Institution/Body)--</option>
+     
+}
+       </select>
+     
+    
+  </div>
+               
+             
+               <hr>
+
+ <div class="form-group">
+    <label for="exampleInputPassword1">Major Discipline in which it falls</label>
+   <select class="form-control" name="disc_name">
+       <option>--Select Discipline--</option>
+    
+       </select>
+
+  </div>
+<hr>
+ 
+-->
+   <div class="form-group">
+    <label for="address">Complete Address of contact person for all Communication</label>
+       <div class="form-group">
+
+           @{var details_user_reg = "SELECT * FROM user_sym_details WHERE uid=@0";
+           var exe_id_det = db.QuerySingle(details_user_reg, Session["uid"]);
+           string f_name = exe_id_det.first_name;
+           f_name = f_name.ToUpper();
+           string m_name = exe_id_det.middle_name;
+           if((m_name=="")||(m_name==null))
+           {
+               m_name = null;
+           }
+           else
+           {
+               m_name = m_name.ToUpper();  
+           }
+               
+           
+           string l_name = exe_id_det.last_name;
+           if ((l_name == "") || (l_name == null))
+           {
+               l_name = null;
+           }
+           else
+           {
+               l_name = l_name.ToUpper();
+           }
+           
+           string full_name = f_name + " " + m_name + " " + l_name;
+
+           var mobile = exe_id_det.mobile;
+           string email = exe_id_det.email;
+
+           }
+           <input type="text" name="fname_com_user" value='@f_name'><input type="text" name="mname_com_user" value='@m_name'><input type="text" name="lname_com_user" value='@l_name'>
+       </div>
+           <input type="text" name="desg_com_user"  class="form-control" value="@exe_id_det.desg" placeholder="Desgination" title="Designation">
+  <input type="text" name="dept_com_user"  class="form-control" value="@exe_id_det.dept" placeholder="Department(if any)" title="Department">
+   <textarea class="form-control" rows="3" name="address_com_user" placeholder="Address For Communication" title="Address">@exe_id_det.address</textarea>
+      <hr>
+        <div class="form-group">
+       <input type="text" name="city_com_user"  class="" value="@exe_id_det.city" placeholder="City" title="city">
+       <input type="text" name="state_com_user"  class="" value="@exe_id_det.state" placeholder="State" title="state"> 
+       <input type="text" maxlength="6" onkeyup="pin_check(this.value,'pin_com_user');" id="pin_com_user" name="pin_com_user"  class="" value="@exe_id_det.pin_code" placeholder="Pin" title="Pin Code">
+       </div>
+           <input type="text" id="contact_user" onkeyup="phone(this.value,'dash_page')"   maxlength="11" name="contact_com_user"  class="form-control" value="@exe_id_det.phone" placeholder="Contact No with STD code" title="Contact no. with STD">
+       <input type="text" name="mob_com_user"  class="form-control" disabled value='@mobile' title="Mobile Number">
+       <input type="text" name="email_com_user"  class="form-control" disabled value='@email' title="Email-id">
+        
+  </div>
+ <button type="submit" class="btn btn-primary">Save</button>
+             </form>
+            
+<script type="text/javascript">
+    for (var i = 1; i <= 2;i++)
+    { $('.nav-sidebar li:nth-child('+i+')').removeClass('active');}
+       
+    $('.nav-sidebar li:nth-child(3)').addClass('active');
+
+
+        </script> 
+            }
+        @*else if ((Request.FilePath) == "/csir-final.com/u_page_3")//if we are in page 3 of the application
+                {
+
+
+    //get details from the uc table
+
+
+
+    var get_uc_details=db.QuerySingle("SELECT * FROM u_c_details WHERE uid_user=@0",Session["uid"]);
+
+    <form action="~/function_form/update_rec_page_3" method="post">
+        <h4>Mention the name and address of the authority who will be responsible for submitting the Audited utilization certificate for the present grant, if sanctioned :</h4>
+       @{
+        string gen="";
+        var val_gen=0;
+    if(get_uc_details.gender==0)
+    {
+        gen="Ms.";
+
+
+    }
+         if(get_uc_details.gender==1)
+        {
+
+            gen="Mr.";
+            val_gen=1;
+        }
+       if(get_uc_details.gender==10)
+        {
+            gen="Mrs.";
+            val_gen=10;
+        }
+    }
+         <div>@gen
+        <label>Title</label>
+        <select name="gen_title">
+           <option value="99">-Select-</option>
+            <option value="1">Mr.</option>
+            <option value="0">Ms.</option>
+            <option value="2">Dr.</option>
+            <option value="3">Prof.</option>
+            <option value="10">Mrs.</option>
+        </select>
+
+        </div>
+
+
+        <div class="col-xs-12">
+
+            <input type="text" value="@get_uc_details.name" class="form-control" placeholder="Name" title="Name" name="uc_name_user">
+        </div>
+
+        <div class="col-xs-4">
+
+            <input type="text" value="@get_uc_details.ins_name"  class="form-control" name="uc_ins_user" placeholder="Institute Name" title="Institute Name">
+
+        </div>
+        <div class="col-xs-4">
+
+       <input type="text" name="uc_desg_user" value="@get_uc_details.desg"  class="form-control" placeholder="Desgination" title="Designation">
+            </div>
+         <div class="col-xs-4">
+
+             <input type="text" name="uc_dept_user" value="@get_uc_details.dept"  class="form-control" placeholder="Department(if any)" title="Department">
+         </div>
+      <div class="col-xs-12">
+       <textarea class="form-control" rows="3" name="uc_address_user" placeholder="Address For Communication" title="Address">@get_uc_details.address</textarea>
+          </div>
+        <div class="col-xs-4">
+           <input type="text" name="uc_city_user" value="@get_uc_details.city"  class="form-control" placeholder="City" title="city">
+            </div>
+            <div class="col-xs-4">
+           <input type="text" name="uc_state_user" value="@get_uc_details.state"  class="form-control" placeholder="State" title="state">
+                </div>
+                <div class="col-xs-4">
+           <input type="text" maxlength="6" onkeyup="pin_check(this.value,'uc_pin_user');" id="uc_pin_user" name="uc_pin_user" value="@get_uc_details.pin_code"  class="form-control" placeholder="Pin" title="Pin Code">
+                    </div>
+                    <div class="col-xs-4">
+           <input type="text" name="uc_contact_user" value="@get_uc_details.phone"  class="form-control" placeholder="Contact No with STD code" title="Contact no. with STD">
+                        </div>
+                        <div class="col-xs-4">
+           <input type="text" name="uc_mob_user" value="@get_uc_details.mobile" class="form-control" placeholder="Mobile Number" title="Mobile Number">
+                            </div>
+                            <div class="col-xs-4">
+           <input type="email" name="uc_email_user" value="@get_uc_details.email_id"  class="form-control" placeholder="Email-id" title="Email-id">
+                                </div>
+        <div class="col-xs-4">
+        <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+    </form>
+    <script type="text/javascript">
+        for (var j = 1; j <= 3;j++)
+        {
+            $('.nav-sidebar li:nth-child('+j+')').removeClass('active');
+            }
+        $('.nav-sidebar li:nth-child(4)').addClass('active');
+
+
+            </script>
+
+                }
+        *@
+        else if ((Request.FilePath) == "/csir-final.com/u_page_4")//if we are in page 4 of the application
+        {
+
+            <style>
+ul.breadcrumb {
+    padding: 8px 16px;
+    list-style: none;
+    background-color: #eee;
+}
+ul.breadcrumb li {display: inline;}
+ul.breadcrumb li+li:before {
+    padding: 8px;
+    color: black;
+    content: "/\00a0";
+}
+ul.breadcrumb li a {color: green;}
+</style>
+
+<ul class="breadcrumb">
+  <li id="1_list"><a href="#" onclick="show_data_pagintion('a',1)">Organizer Details</a></li>
+  <li id="2_list"><a href="#" onclick="show_data_pagintion('b',2)">Collaborators Details</a></li>
+  <li id="3_list"><a href="#" onclick="show_data_pagintion('c',3)">Sponsorers Details</a></li>
+  <li id="4_list"><a href="#" onclick="show_data_pagintion('d',4)">Executive Authority Details</a></li>
+    <li id="5_list"><a href="#" onclick="show_data_pagintion('e',5)">Head of institution Details</a></li>
+  
+</ul>
+
+  
+  
+     
+      
+   <div id="org_vr_data">
+ <b>Instructions</b>
+       <ul>
+       <li>Click on the above links to fill data</li>
+       <li>Please keep Saving your data on every page else information would be lost</li>
+       <li>Please fill up accurate information</li>
+       </ul>
+</div> 
+    
+          
+<script type="text/javascript">
+    for (var k = 1; k <= 4;k++)
+    {
+        $('.nav-sidebar li:nth-child('+k+')').removeClass('active');
+        }
+    $('.nav-sidebar li:nth-child(4)').addClass('active');
+
+   
+        </script> 
+
+            }
+
+        else if ((Request.FilePath) == "/csir-final.com/u_page_5")//if we are in page 4 of the application
+            {
+                <style>
+ul.breadcrumb_2 {
+    padding: 8px 16px;
+    list-style: none;
+    background-color: #eee;
+}
+ul.breadcrumb_2 li {display: inline;}
+ul.breadcrumb_2 li+li:before {
+    padding: 8px;
+    color: black;
+    content: "/\00a0";
+}
+ul.breadcrumb_2 li a {color: green;}
+                  
+</style>
+
+<ul class="breadcrumb_2">
+  <li id="1_li_tech"><a href="#" onclick="show_5_page_data('a',1);">Technical Session Details</a></li>
+  <li id="2_li_tech"><a href="#" onclick="show_5_page_data('b',2);">Speakers Details</a></li>
+  <li id="3_li_tech"><a href="#" onclick="show_5_page_data('c',3);">Participating CSIR Labs Details</a></li>
+    <li id="4_li_tech"><a href="#" onclick="show_5_page_data('d',4);">Participating Scientists From CSIR Labs Details</a></li>
+  
+</ul>
+    
+           <div id="org_vr_data_5_page">
+ <b>Instructions</b>
+       <ul>
+       <li>Click on the above links to fill data</li>
+       <li>Please keep Saving your data on every page else information would be lost</li>
+       <li>Please fill up accurate information</li>
+       </ul>
+</div>         
+
+
+                <script>
+                 for (var k = 1; k <= 5;k++)
+    {
+        $('.nav-sidebar li:nth-child('+k+')').removeClass('active');
+        }
+    $('.nav-sidebar li:nth-child(5)').addClass('active');
+
+   
+        </script>
+  
+                }
+               
+                //page 6
+        else if ((Request.FilePath) == "/csir-final.com/u_page_7")//if we are in page 4 of the application
+            {
+               int val_session=1;
+Convert.ToInt32(Session["val_page"]=val_session);
+
+                
+//get the entries from the table
+var get_entries_income=db.QuerySingle("SELECT * FROM income_finance_details_1 WHERE user_id=@0",Session["uid"]);
+
+var add_finance_entries = get_entries_income.ta_da+get_entries_income.stationary+get_entries_income.conf_print+get_entries_income.sec_assist+get_entries_income.proc_pub+get_entries_income.board_lodge;
+  
+ var add_req_entries= get_entries_income.req_ta_da+get_entries_income.req_stationary+get_entries_income.req_conf_print+get_entries_income.req_sec_assist+get_entries_income.req_proc_pub+get_entries_income.req_board_lodge;
+       
+                <table class="table table-hover" border="1">
+              <thead>
+                    <tr>
+              <th colspan="3" style="background-color: #808080">Total anticipated expenditure under the following heads:</th>
+<th colspan="2" style="background-color: #808080">Estimated Head-wise Grant requested from CSIR</th>
+              </tr>
+                  <tr>
+                  <th>
+                  S.no
+                  </th>
+                      <th>
+                  Budget Head
+                  </th>
+                      <th>
+                  Amount(Rs.)
+                  </th>
+                      <th>Amount(Rs.)</th>
+                  </tr>
+                  </thead>
+                    <tbody>
+                         @if(get_entries_income!=null)
+        {
+           
+             <tr>
+                    <td>(i)</td>
+                        <td>TA/DA</td>
+                        <td><input type="number" id="exp_ta_da" name="exp_ta_da" min="0" value="@get_entries_income.ta_da" onblur="first_column(0);"><span id="show_tick_exp_0"></span></td>
+                        <td><input type="number" id="req_ta_da" name="req_ta_da" min="0" value="@get_entries_income.req_ta_da" onblur="second_col(0);"><span id="show_tick_req_0"></span></td>
+                        
+                    </tr>
+                     <tr>
+                    <td>(ii)</td>
+                        <td>Pre-Conference printing(announcements,abstracts etc.)</td>
+                        <td><input type="number" id="exp_prin_rs" name="exp_prin_rs" min="0" value="@get_entries_income.conf_print" onblur="first_column(1);"><span id="show_tick_exp_1"></span></td>
+                        <td><input type="number" id="req_prin_rs" name="req_prin_rs" min="0" value="@get_entries_income.req_conf_print" onblur="second_col(1);"><span id="show_tick_req_1"></span></td>
+                        
+                    </tr>
+                     <tr>
+                    <td>(iii)</td>
+                        <td>Stationary</td>
+                        <td><input type="number" id="exp_st_rs" name="exp_st_rs" min="0" value="@get_entries_income.stationary" onblur="first_column(2);"><span id="show_tick_exp_2"></span></td>
+                        <td><input type="number" id="req_st_rs" name="req_st_rs" min="0" value="@get_entries_income.req_stationary" onblur="second_col(2);"><span id="show_tick_req_2"></span></td>
+                        
+                    </tr>
+                         <tr>
+                    <td>(iv)</td>
+                        <td>Secretarial Assistance</td>
+                        <td><input type="number" id="exp_sec_rs" name="exp_sec_rs" min="0" value="@get_entries_income.sec_assist" onblur="first_column(3);"><span id="show_tick_exp_3"></span></td>
+                        <td><input type="number" id="req_sec_rs" name="req_sec_rs" min="0" value="@get_entries_income.req_sec_assist" onblur="second_col(3);"><span id="show_tick_req_3"></span></td>
+                        
+                    </tr>
+                     <tr>
+
+                    <td>(v)</td>
+                        <td>Estimated expenditure on Publication of proceedings</td>
+                        <td><input type="number" id="exp_pub_rs" name="exp_pub_rs" min="0" value="@get_entries_income.proc_pub" onblur="first_column(4);"><span id="show_tick_exp_4"></span></td>
+                        <td><input type="number" id="req_pub_rs" name="req_pub_rs" min="0" value="@get_entries_income.req_proc_pub" onblur="second_col(4);"><span id="show_tick_req_4"></span></td>
+                        
+                    </tr>
+                     <tr>
+                    <td>(vi)</td>
+                        <td>Boarding and Lodging of delegates</td>
+                        <td><input type="number" id="exp_board_rs" name="exp_board_rs" min="0" value="@get_entries_income.board_lodge" onblur="first_column(5);"><span id="show_tick_exp_5"></span></td>
+                        <td><input type="number" id="req_board_rs" name="req_board_rs" min="0" value="@get_entries_income.req_board_lodge" onblur="second_col(5);"><span id="show_tick_req_5"></span></td>
+                        
+                    </tr>
+                    
+
+            }
+            else
+            {
+                    <tr>
+                    <td>(i)</td>
+                        <td>TA/DA</td>
+                        <td><input type="number" id="exp_ta_da" name="exp_ta_da" min="0" onblur="first_column(0);"><span id="show_tick_exp_0"></span></td>
+                        <td><input type="number" id="req_ta_da" name="req_ta_da" min="0" onblur="second_col(0);"><span id="show_tick_req_0"></span></td>
+                        
+                    </tr>
+                     <tr>
+                    <td>(ii)</td>
+                        <td>Pre-Conference printing(announcements,abstracts etc.)</td>
+                        <td><input type="number" id="exp_prin_rs" name="exp_prin_rs" min="0" onblur="first_column(1);"><span id="show_tick_exp_1"></span></td>
+                        <td><input type="number" id="req_prin_rs" name="req_prin_rs" min="0" onblur="second_col(1);"><span id="show_tick_req_1"></span></td>
+                        
+                    </tr>
+                     <tr>
+                    <td>(iii)</td>
+                        <td>Stationary</td>
+                        <td><input type="number" id="exp_st_rs" name="exp_st_rs" min="0" onblur="first_column(2);"><span id="show_tick_exp_2"></span></td>
+                        <td><input type="number" id="req_st_rs" name="req_st_rs" min="0" onblur="second_col(2);"><span id="show_tick_req_2"></span></td>
+                        
+                    </tr>
+                         <tr>
+                    <td>(iv)</td>
+                        <td>Secretarial Assistance</td>
+                        <td><input type="number" id="exp_sec_rs" name="exp_sec_rs" min="0" onblur="first_column(3);"><span id="show_tick_exp_3"></span></td>
+                        <td><input type="number" id="req_sec_rs" name="req_sec_rs" min="0" onblur="second_col(3);"><span id="show_tick_req_3"></span></td>
+                        
+                    </tr>
+                     <tr>
+
+                    <td>(v)</td>
+                        <td>Estimated expenditure on Publication of proceedings</td>
+                        <td><input type="number" id="exp_pub_rs" name="exp_pub_rs" min="0" onblur="first_column(4);"><span id="show_tick_exp_4"></span></td>
+                        <td><input type="number" id="req_pub_rs" name="req_pub_rs" min="0" onblur="second_col(4);"><span id="show_tick_req_4"></span></td>
+                        
+                    </tr>
+                     <tr>
+                    <td>(vi)</td>
+                        <td>Boarding and Lodging of delegates</td>
+                        <td><input type="number" id="exp_board_rs" name="exp_board_rs" min="0" onblur="first_column(5);"><span id="show_tick_exp_5"></span></td>
+                        <td><input type="number" id="req_board_rs" name="req_board_rs" min="0" onblur="second_col(5);"><span id="show_tick_req_5"></span></td>
+                        
+                    </tr>
+                 
+}
+                    
+                     <tr>
+                    <td>(vii)</td>
+                        <td style="color: #610a0a"><b>Total(i-vi)</b></td>
+                        <td><input type="number" readonly="" id="first_col_val" value="@add_finance_entries"></td>
+                        <td><input type="number" readonly="" id="second_col_val" value="@add_req_entries"></td>
+                        
+                    </tr>
+                       
+                    </tbody>
+                </table>
+    <span id="show_err"></span>
+
+
+
+    <hr>
+
+                     var get_finance_tab_2_details = db.QuerySingle("SELECT * FROM income_finance_details_2 WHERE user_id=@0", Session["uid"]);
+
+var do_data_total_finance=get_finance_tab_2_details.reg_fee+get_finance_tab_2_details.sale_proc_pub+get_finance_tab_2_details.any_other;
+
+<table class="table table-hover">
+<thead>
+<tr>
+<th colspan="3" style="background-color: #808080">
+Total anticipated income out of the following
+</th>
+</tr>
+<tr>
+<th>
+S.No
+</th>
+<th>
+Title
+</th>
+<th>
+Amount(Rs.)
+</th>
+</tr>
+</thead>
+<tbody>
+@if(get_finance_tab_2_details!=null)
+{
+<tr>
+
+<td>(i)</td><td>Registration fee of the delegates</td><td><input type="number" id="reg_fee" name="reg_fee" min="0" onblur="finance_tab_2(1);" value="@get_finance_tab_2_details.reg_fee"><span id="finance_tick_1"></span></td></tr>
+    <tr>
+<td>(ii)</td><td>Sale of proceedings to be published</td><td><input type="number" id="sale_proc_pub" name="sale_proc_pub" min="0" onblur="finance_tab_2(2);" value="@get_finance_tab_2_details.sale_proc_pub"><span id="finance_tick_2"></span></td>
+</tr>
+<tr>
+<td>(iii)</td><td>Any other income / grant from your institute / other Organization</td><td><input type="number" id="other_income" name="other_income" min="0" onblur="finance_tab_2(3);" value="@get_finance_tab_2_details.any_other"><span id="finance_tick_3"></span></td>
+</tr>    
+}
+    else
+    {
+     <tr>
+
+<td>(i)</td><td>Registration fee of the delegates</td><td><input type="number" id="reg_fee" name="reg_fee" min="0" onblur="finance_tab_2(1);"><span id="finance_tick_1"></span></td></tr>
+    <tr>
+<td>(ii)</td><td>Sale of proceedings to be published</td><td><input type="number" id="sale_proc_pub" name="sale_proc_pub" min="0" onblur="finance_tab_2(2);"><span id="finance_tick_2"></span></td>
+</tr>
+<tr>
+<td>(iii)</td><td>Any other income / grant from your institute / other Organization</td><td><input type="number" id="other_income" name="other_income" min="0" onblur="finance_tab_2(3);"><span id="finance_tick_3"></span></td>
+</tr>   
+    }
+
+<tr>
+<td>(iv)</td><td style="color: #610a0a"><b>Total(i-iii)</b></td><td><input type="text" readonly="" id="tot_finance_2" value="@do_data_total_finance"></td>
+</tr>    
+</tbody>
+</table>
+
+<hr>
+<form method="post" enctype="multipart/form-data" action="~/u_page_8">
+<div class="form-group">
+<input type="checkbox" name="check_final" id="check_final"  onclick="check_data()"><b>I Declare that all information filled by me is correct and no changes are to be done by me <br /><span style="color:red">Submit application carefully as after submitting finally and uploading signature it cannot be changed</span></b>
+</div>
+    
+<table  class="table-bordered">
+<tbody>
+<tr>
+<td><input type="file" id="upload" name="file_value" onchange="show_sign_to(this)" /></td>
+<td><u id="img">________</u><label>Signature Of organiser</label></td>
+</tr>
+
+</tbody>
+
+</table>
+    
+
+
+
+ 
+
+<button class="btn btn-primary" type="submit" id="show_btn" style="display: none">Final Submit</button>
+ </form>
+                <script>
+                 for (var k = 1; k <= 7;k++)
+    {
+        $('.nav-sidebar li:nth-child('+k+')').removeClass('active');
+        }
+    $('.nav-sidebar li:nth-child(7)').addClass('active');
+
+   
+        </script>
+  
+                }
+        else if ((Request.FilePath) == "/csir-final.com/u_page_6")
+                {
+                   <h4 style="color:red">Please fill this form in a single time as you will not be able to edit data you will only be able to view it</h4>
+                    var get_neft_data = "SELECT * FROM neft_details";
+                    //check if details are present
+                    var check_prv_data = db.QuerySingle("SELECT * FROM prv_grant_details WHERE uid_user=@0", Session["uid"]);
+                    var get_det_grant = "SELECT * FROM prv_grant_details WHERE uid_user=@0";
+                    //var i=0;
+
+                    <form action="function_form/insert_grant_neft_details" method="post" enctype="multipart/form-data">
+                        @if (check_prv_data != null)
+                        {
+                            <table class="table table-hover" border="1" style="border-color: #310f16">
+                                <thead>
+                                    <tr style="background-color: rgba(79, 83, 80, 0.35)">
+                                        <th>S.No.</th>
+                                        <th>Total Amount(Rs.)</th>
+                                        <th>CSIR Grant Reference No</th>
+                                        <th colspan="2" style="text-align: center">Conference Title and period</th>
+                                        <th colspan="2">Whether the Utilization Certificate have been submitted(indicate the reference number and date also)</th>
+                                        <th colspan="2">Copy of Utilzation Certificate</th>
+                                    </tr>
+                                    <tr> <th></th> <th></th>  <th>Title</th><th style="text-align: center">Period</th><th></th><th>Yes</th> <th>No</th><th></th></tr>
+
+                                </thead>
+                                <tbody>
+                                    @foreach (var data_show in db.Query(get_det_grant, Session["uid"]))
+                                    {
+
+
+
+                                        <tr>
+                                            <td>@(data_show.row_no)</td>
+                                            <td><input type="number" value="@(data_show.total_amount)" name="total_amount_prv_@(data_show.row_no)" style="max-width:100px"></td>
+                                            <td><pre><b>SYM/</b><input type="number" value="@(data_show.grant_ref_no_file)" name="csir_ref_no_@(data_show.row_no)" style="max-width:60px"><b>/</b><input type="number" value="@data_show.grant_ref_no_file_year" name="csir_year_(@data_show.row_no)" style="max-width:40px" /><b>-HRD</b></pre></td>
+                                            <td><textarea rows="3" cols="18" name="prv_grant_title_@(data_show.row_no)">@(data_show.conf_title)</textarea></td>
+                                            <td style="text-align:center"><b>(From)</b><br /><input type="date" value="@(data_show.conf_period_from)" name="date_prv_from_@(data_show.row_no)"><b>(To)</b><br /><input type="date" value="@(data_show.conf_period_to)" name="date_prv_to_@(data_show.row_no)"></td>
+                                            @if (data_show.ref_no != null)
+                                            {
+                                                <td>
+                                                    <img src="~/images/tick.png" alt="yes" height="20" width="20" />
+                                                    @*<input type="radio" checked id="rad_1_grant_@(data_show.row_no)" name="val_uc_@(data_show.row_no)" onclick="show_other_details(1,@(data_show.row_no));"><span id='show_data_grant_@(data_show.row_no)'><input type='number' value="@(data_show.ref_no)" name='ref_no_@(data_show.row_no)' placeholder='reference number'><input type='date' value="@(data_show.date)" name='date_grant_@(data_show.row_no)'></span></td><td><input type="radio" name="val_uc_@(data_show.row_no)" onclick="show_other_details(0,@(data_show.row_no));">
+                                                    *@
+                                                </td>
+                                                <td></td>
+                                                // <td><input type="file" name="file_uc_@(data_show.row_no)"></td>
+                                                <td><a href="~/images/@(data_show.file_name)" target="_blank">Link</a></td>
+
+                                            }
+                                            else
+                                            {
+                                                <td></td>
+                                                <td>
+                                                    <img src="~/images/cross.png" alt="no" height="20" width="20" />
+                                                    @*<input type="radio" id="rad_1_grant_@(data_show.row_no)" name="val_uc_@(data_show.row_no)"
+                                                         onclick="show_other_details(1,@(data_show.row_no));"></td><td><input type="radio"
+                                                        checked name="val_uc_@(data_show.row_no)" onclick="show_other_details(0,@(data_show.row_no));">*@
+
+                                                </td>
+                                            }
+
+                                        </tr>
+
+
+
+
+
+                                    }
+                                </tbody>
+                            </table>
+
+                        }
+                        else
+                        {
+
+                            <div class="form-group">
+                                <label>(i) Did the organizers receive any garnt from CSIR in the past(From 1<sup>st</sup> Apr 2004 onward)</label>
+
+                                <div class="radio"><label><input type="radio" name="prv_grant" id="prv_grant" value="1" onclick="check_prv_grant(1)">Yes</label></div>
+
+                                <div class="radio"><label><input type="radio" checked name="prv_grant" id="prv_grant" value="0" onclick="check_prv_grant(0)">No</label></div>
+
+                            </div>
+                        }
+                        <hr>
+
+                        <div class="form-group">
+                            <span id="show_prv_table"></span>
+                        </div>
+                   </form>
+    var neft_person=db.QuerySingle("SELECT * FROM neft_pay WHERE uid=@0",Session["uid"]);
+        <h4 style="color: #240904">(ii) Name of the Authority to whom NEFT/RTGS payment is to be made</h4>
+<form method="post" action="~/function_form/insert_neft_per_name">
+    <div class="form-group">
+        @if(neft_person!=null)
+        {
+            if(neft_person.other_person!=null)
+            { 
+           <input type="text" class="form-control" disabled value="@neft_person.other_person" />
+            }
+            else
+            {
+                //get name of the person acc. to id
+                var get_name_neft = db.QuerySingle("SELECT neft_details.neft_person FROM neft_details INNER JOIN neft_pay ON neft_pay.neft_per_id=neft_details.id WHERE neft_pay.uid=@0", Session["uid"]);
+                <input type="text" class="form-control" disabled value="@get_name_neft[0]" />
+
+            }
+        }
+        else
+        {
+        <select class="form-control" name="neft_per_id" onchange="check_select()" id="sel_neft">
+            @foreach (var row_neft in db.Query(get_neft_data))
+                {
+                <option value="@row_neft.id">@row_neft.neft_person</option>
+                }
+            <option id="any_other" value="99">Any Other Authority designated by your Organization/Institute</option>
+
+        </select>
+        }
+        <span id="show_sel_neft"></span>
+        <br>
+        <div class="form-group">
+          @if(neft_person==null)
+          { 
+                <button class="btn btn-primary">Save</button>
+          }
+          else
+          {
+              
+          }
+              
+               
+        </div>
+    </div>
+</form>
+
+                  <script>
+                 for (var m = 1; m <= 6;m++)
+                   {
+        $('.nav-sidebar li:nth-child('+m+')').removeClass('active');
+                    }
+    $('.nav-sidebar li:nth-child(6)').addClass('active');
+
+   
+        </script>
+  
+                
+                }
+          
+
+            else {
+
+      <h3 class="sub-header">Application Status</h3>
+       
+                var get_status_app_if_sanc = db.QuerySingle("SELECT amount FROM app_sanc WHERE uid=@0",Session["uid"]);
+                var get_status_if_def=db.QuerySingle("SELECT reason,date_time FROM app_deff WHERE uid=@0",Session["uid"]);
+                var get_status_if_reg = db.QuerySingle("SELECT reason_any,date_time FROM app_regret WHERE uid=@0", Session["uid"]);
+                if(get_status_app_if_sanc.amount!=null)
+                {
+                    <p>Your Application has been considered and <span style="color:darkgoldenrod"><strong>Rs.@get_status_app_if_sanc.amount</strong></span> is granted by committee experts </p>
+                }
+               if((get_status_if_def.reason!=null)&&(get_status_if_def.date_time!=null))
+               {
+                   <p>Your application is Under Consideration . it is put on hold and will be taken up in the next meeting<br />
+        
+        Reason:<textarea>@get_status_if_def.reason</textarea>
+        </p>
+               }
+               if(get_status_if_reg.date_time!=null)
+               {
+                 <p style="color:orangered">Application is regretted on @get_status_if_reg.date_time</p>  
+               }
+
+      
+}
+
+     </div>
+
+
+           
+          
+
+  
+
+
+
+ }
+              else if (Convert.ToInt32(Session["priv"]) == 1)
+          {
+               <div class="col-sm-3 col-md-2 sidebar">
+                  <ul class="nav nav-sidebar">
+              <li class="active" id="1_admin"><a href="~/dashboard_Layout">Applications Chart<span class="sr-only">(current)</span></a></li>
+            
+       
+        
+            <li id="2_admin"><a href="~/_ad_pages/ad_page_1">Application Received</a></li>
+            <li><a href="~/_ad_pages/ad_page_2">Application Deferred</a></li>
+            <li><a href="~/_ad_pages/ad_page_3">Application Regret</a></li>
+            <li><a href="~/_ad_pages/ad_page_4">Add user</a></li>
+                      </ul>
+                     </div>
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+          <h3 class="page-header">@Page.Title</h3>
+    
+
+@if ((Request.FilePath) == "/csir-final.com/dashboard_Layout")
+{
+
+    //get date details like month and year registerd
+    var get_m_y_details = db.QuerySingle("SELECT date_reg FROM user_sym_details WHERE uid=@0", Session["uid"]);
+    //var val_total=get_m_y_details.date_reg;
+    //@val_total;
+
+    string val_tot_t_m_y = get_m_y_details.date_reg;
+    string[] values_get = val_tot_t_m_y.Split(' ');
+    var value_year = values_get[3];
+
+    //get data
+    var get_val_total_rec_app=db.QueryValue("SELECT COUNT(*) FROM user_sym_details WHERE final_submit_done=@0",1);
+    var get_total_sanctioned=db.QueryValue("SELECT COUNT(*) FROM app_sanc WHERE date_time != @0 AND amount != @1","","");
+    var get_tot_deff=db.QueryValue("SELECT COUNT(*) FROM app_deff WHERE date_time <> @0","");
+    var get_tot_reg = db.QueryValue("SELECT COUNT(*) FROM app_regret WHERE date_time <> @0", "");
+    //count the total no. of users registered
+    
+    <script type="text/javascript">
+        $(function () {
+            $('#container').highcharts({
+                chart: {
+                    plotBackgroundColor: null,
+                    plotBorderWidth: null,
+                    plotShadow: false,
+                    type: 'pie'
+                },
+                title: {
+                    text: 'Application Recieved in the year 2016 and total deffered and refer cases'
+                },
+                tooltip: {
+                    pointFormat: '{series.name}: <b>{point.y}</b>'
+                },
+                plotOptions: {
+                    pie: {
+                        allowPointSelect: true,
+                        cursor: 'pointer',
+                        dataLabels: {
+                            enabled: true,
+                            format: '<b>{point.name}</b>: {point.y} ',
+                            style: {
+                                color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                            }
+                        }
+                    }
+                },
+                series: [{
+                    name: 'Total',
+                    colorByPoint: true,
+                    data: [{
+                        name: 'Application Recieved',
+                        y: @get_val_total_rec_app
+                    
+                    }, {
+                        name: 'Application sanctioned',
+                        y: @get_total_sanctioned
+                    },
+                     {
+                         name: 'Application Regret',
+                         y: @get_tot_reg
+                     },
+                     {
+                        name: 'Application Deffered',
+                        y: @get_tot_deff
+                        
+                    }]
+                }]
+            });
+        });
+    </script>
+            <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>   
+
+    //@RenderPage("chart.cshtml")
+ <script>
+     for (z = 2; z <= 5; z++) {
+
+
+         $('.nav-sidebar li:nth-child('+z+')').removeClass('active');
+     }
+
+     $('.nav-sidebar li:nth-child(1)').addClass('active');
+
+
+        </script>
+
+
+}
+else if ((Request.FilePath) == "/csir-final.com/_ad_pages/ad_page_1")
+    {
+        //get name of all the discipline
+        var get_disc_part_2="SELECT * FROM discipline_all";
+        <div>
+            
+<label>Discipline Name</label>
+            <select onchange="show_ajax_disc(this.value)">
+                <option value="0">-Select-</option>
+@foreach(var row_admin_show_disc in db.Query(get_disc_part_2))
+{
+            <option value="@row_admin_show_disc.d_id">@row_admin_show_disc.name_d</option>
+}
+  
+            </select>
+</div>
+        //get all the applications and their details
+        var get_app_data="SELECT sym_details_basic.spid,sym_details_basic.soc_name,sym_details_basic.smid,"
+        +"discipline_all.name_d,discipline_all.d_id,user_sym_details.final_submit_done,sym_details_basic.from_date,"
+        +"sym_details_basic.to_date FROM sym_details_basic"
+        +" INNER JOIN discipline_all ON discipline_all.d_id = sym_details_basic.disc_id"
+        +" INNER JOIN user_sym_details ON user_sym_details.uid = sym_details_basic.spid WHERE user_sym_details.final_submit_done=@0";
+        
+      
+        <div class="table-responsive">
+  <table class="table table-bordered" id="table_acc_disc_data">
+    <thead>
+    <tr>
+        <th>
+        Unique Id(acc. to discipline)(sym/unique id/discpline id) 
+        </th>
+    <th>
+    Society/Institution/Organization name
+    </th>    
+        <th>
+        Discipline
+        </th>
+        <th>
+        From
+        </th>
+        <th>
+        To
+        </th>
+        <th colspan="4" style="text-align:center">Application Status</th>
+        </tr>
+        <tr>
+            <th></th><th></th><th></th><th></th><th></th>
+        <th>
+      Grant Sanctioned?
+        </th>
+            <th>If Sanctioned Amount(Rs.)</th>
+           
+            <th>Grant Deffered?</th>
+        <th>
+            Grant Regret?
+        </th>
+       
+    </tr>  
+
+    </thead>
+      <tbody>
+@foreach(var row_admin_show in db.Query(get_app_data,1))
+{
+    //check if application is sanctioned and what amount is sanctioned
+
+    var check_ap_reffered_am_san = db.QuerySingle("SELECT amount FROM app_sanc WHERE uid=@0",row_admin_show.spid);
+    var check_ap_def = db.QuerySingle("SELECT reason FROM app_deff WHERE uid=@0", row_admin_show.spid);
+    var check_ap_reg = db.QuerySingle("SELECT date_time FROM app_regret WHERE uid=@0", row_admin_show.spid);
+       
+      <tr>
+      <td style="text-align: center"><b><a style="cursor: pointer" href="~/show_user_det?smid=@row_admin_show.smid">Sym/@row_admin_show.smid/@row_admin_show.d_id</a></b></td> 
+          <td>@row_admin_show.soc_name</td>
+          <td>@row_admin_show.name_d</td>
+          <td>@row_admin_show.from_date</td>
+          <td>@row_admin_show.to_date</td> 
+          <td style="text-align:center">
+
+              @if(Convert.ToInt32(check_ap_reffered_am_san.amount)!=0)
+              {
+                  <img src="~/images/tick.png" alt="santioned(application reffered)" height="40" width="40"/>
+
+              }
+            
+              else
+              {
+                <img src="~/images/cross.png" alt="not santioned(application not reffered)" height="20" width="20" />
+              }
+
+          </td>  
+          <td style="text-align:center">
+@if (Convert.ToInt32(check_ap_reffered_am_san.amount)!=0)
+{
+    <span>@check_ap_reffered_am_san.amount</span>
+
+}
+else
+{
+    <span style="color:red">Null</span>
+}
+
+          </td>
+          <td>
+              @if (check_ap_def.reason != null)
+              {
+                <img src="~/images/tick.png" alt="santioned(application reffered)" height="40" width="40" />
+              }
+              else
+              {
+                <img src="~/images/cross.png" alt="not santioned(application not reffered)" height="20" width="20" />
+              }
+
+
+          </td>
+          <td>
+              @if (check_ap_reg.date_time!= null)
+              {
+                  <img src="~/images/tick.png" alt="santioned(application reffered)" height="40" width="40" />
+              }
+              else
+              {
+                  <img src="~/images/cross.png" alt="not santioned(application not reffered)" height="20" width="20" />
+              }
+
+          </td>
+      </tr>
+}
+      </tbody>
+  </table>
+</div>
+
+
+     <script>
+
+         for (var v = 1; v <= 5; v++) {
+
+             if (v == 2) {
+                 $('.nav-sidebar li:nth-child(2)').addClass('active');
+             }
+             else {
+
+
+                 $('.nav-sidebar li:nth-child('+v+')').removeClass('active');
+             }
+         }
+
+        </script>
+    }
+else if ((Request.FilePath) == "~/_ad_pages/ad_page_2")
+{
+
+
+    <h4>s</h4>
+}
+else if ((Request.FilePath) == "/csir-final.com/show_user_det")
+{
+    var id_sm_get = Request["smid"];
+
+    //get details of the user so clicked
+    var get_details_user_smid = db.QuerySingle("SELECT *,type_ins.name_ins,discipline_all.name_d FROM sym_details_basic INNER JOIN type_ins ON type_ins.ins_id = sym_details_basic.type_ins_id INNER JOIN discipline_all ON discipline_all.d_id = sym_details_basic.disc_id WHERE smid=@0", id_sm_get);
+    //get all communication details from user_sym_details
+    if (get_details_user_smid == null)
+    {
+
+    }
+    var get_comm_details = db.QuerySingle("SELECT * FROM user_sym_details INNER JOIN sym_details_basic ON sym_details_basic.spid = user_sym_details.uid WHERE sym_details_basic.smid=@0", id_sm_get);
+    var id_user = get_comm_details.uid;
+
+         <style>
+ul.breadcrumb_3 {
+    padding: 8px 16px;
+    list-style: none;
+    background-color: #eee;
+}
+ul.breadcrumb_3 li {display: inline;}
+ul.breadcrumb_3 li+li:before {
+    padding: 8px;
+    color: black;
+    content: "/\00a0";
+}
+ul.breadcrumb_3 li a:hover {color: #46ad23;}
+                  
+</style>
+
+<ul class="breadcrumb_3">
+  <li id="1_li_ap_det"><a href="show_user_det?smid=@id_sm_get" class="active_a" >Page 1</a></li>
+  <li id="2_li_ap_det"><a href="#" onclick="show_user_data('b',2,@id_sm_get,@id_user);">Page 2</a></li>
+  <li id="3_li_ap_det"><a href="#" onclick="show_user_data('c',3,@id_sm_get,@id_user);">Page 3</a></li>
+    <li id="4_li_ap_det"><a href="#" onclick="show_user_data('d',4,@id_sm_get,@id_user);">Page 4</a></li>
+  
+</ul>
+
+<div id="org_vr_data_admin">
+     <div class="form-group">
+
+                       <label>(1) Name of the Society/Academic Institution/Organization under whose auspices the Symposium/Seminar/ Conference/Workshop etc. is proposed to be organized. A copy of each of the following may be enclosed in case of a Society-Registration Certificate; Memorandum of Association;Audited statement of accounts of the previous Year </label>
+<input type="text" disabled name="soc_name" id="soc_name" class="form-control" value="@get_details_user_smid.soc_name">
+                   </div>
+    <div class ="form-group">
+    <label>(2) Type Of Institution/Body</label>
+<input type="text" disabled class="form-control" value="@get_details_user_smid.name_ins">
+    </div>
+
+ <div class ="form-group">
+    <label>(3) Title/ Name of the Symposium/Seminar/Conference/Workshop etc:</label>
+<input type="text" disabled class="form-control" value="@get_details_user_smid.title">
+    </div>
+
+<div class ="form-group">
+    <label>(4) Major discipline in which it falls</label>
+<input type="text" disabled class="form-control" value="@get_details_user_smid.name_d">
+    </div>
+
+<div class ="form-group">
+    <label>(5) <br>Address line 1</label>
+    
+<input type="text" disabled class="form-control" value="@get_details_user_smid.address">
+    <label>City</label>
+    <input type="text" disabled class="form-control" value="@get_details_user_smid.city">
+    <label>State</label>
+    <input type="text" disabled class="form-control" value="@get_details_user_smid.state">
+<label>Pin Code</label>
+<input type="text" disabled class="form-control" value="@get_details_user_smid.pin">
+    </div>
+    @{
+string s=get_details_user_smid.from_date;
+string[] words = s.Split('-');
+string s_two=get_details_user_smid.to_date;
+string[] words_to=s_two.Split('-');
+}
+<div class ="form-group">
+<label>(6) Period</label>
+ <table border="1" style="border-color: #e8e1e1" class="table table-hover">
+<thead>
+<tr>
+<th colspan="3" style="background-color: #808080">FROM</th>
+    
+<th colspan="3" style="background-color: #808080">To</th>
+</tr>
+<tr>
+<th>Date</th><th>Month</th><th>Year</th>
+<th>Date</th><th>Month</th><th>Year</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>@words[2]</td><td>@words[1]</td><td>@words[0]</td>
+<td>@words_to[2]</td><td>@words_to[1]</td><td>@words_to[0]</td>
+
+</tr>    
+</tbody>
+</table>
+</div>
+<div class="form-group">
+    <label for="address">(7) Complete Address of contact person for all Communication</label>
+    
+@{
+  
+string f_name=get_comm_details.first_name;
+f_name=f_name.ToUpper();
+string m_name=get_comm_details.middle_name;
+m_name=m_name.ToUpper();
+string l_name=get_comm_details.last_name;
+l_name=l_name.ToUpper();
+string full_name=f_name+" "+m_name+" "+l_name;
+
+var mobile=get_comm_details.mobile;
+string email=get_comm_details.email;
+  }
+
+   <input type="text"   class="form-control" disabled value='@full_name'>
+   <input type="text" disabled   class="form-control" value="@get_comm_details.desg" placeholder="Desgination" title="Designation">
+  <input type="text"  disabled class="form-control" value="@get_comm_details.dept" placeholder="Department(if any)" title="Department">
+   <textarea class="form-control" disabled rows="3" name="address_com_user" placeholder="Address For Communication" title="Address">@get_comm_details.address</textarea>
+      <hr>
+        <div class="form-group">
+       <input type="text" name="city_com_user" disabled  class="" value="@get_comm_details.city" placeholder="City" title="city">
+       <input type="text" name="state_com_user" disabled  class="" value="@get_comm_details.state" placeholder="State" title="state"> 
+       <input type="text" class="" disabled value="@get_comm_details.pin_code" placeholder="Pin" title="Pin Code">
+       </div>
+           <input type="text" disabled  class="form-control" value="@get_comm_details.phone" placeholder="Contact No with STD code" title="Contact no. with STD">
+       <input type="text" name="mob_com_user"  class="form-control" disabled value='@mobile' title="Mobile Number">
+       <input type="text" name="email_com_user"  class="form-control" disabled value='@email' title="Email-id">
+        
+  </div>
+
+<div class="form-group">
+<label>(8) Symposium Organised last:</label>
+From:<input type="text" disabled value="@get_details_user_smid.last_sym_from_org">To:<input type="text" disabled value="@get_details_user_smid.last_sym_to_org">
+</div>
+    </div>
+        <script>
+
+         for (var v1 = 1; v1 <= 5; v1++) {
+
+             if (v1 == 2) {
+                 $('.nav-sidebar li:nth-child(2)').addClass('active');
+             }
+             else {
+
+
+                 $('.nav-sidebar li:nth-child('+v1+')').removeClass('active');
+             }
+         }
+
+        </script>
+
+
+        }
+
+else if ((Request.FilePath) == "~/_ad_pages/ad_page_4")
+{
+    <div class="form-group">
+        <label>Name of the user</label>
+        <input type="text" class="form-control" value="name user" />
+
+    </div>
+}
+  
+    </div>
+
+
+          }
+
+        else if (Convert.ToInt32(Session["priv"]) == 2)
+          {
+            <div class="col-sm-3 col-md-2 sidebar">
+                <ul class="nav nav-sidebar">
+                    <li class="active"><a href="~/dashboard_Layout">Edit Instructions <span class="sr-only">(current)</span></a></li>
+
+
+
+                    <li id="2_admin"><a href="~/_ad_pages/ad_page_1">Application Received</a></li>
+                    <li><a href="~/_ad_pages/ad_page_2">Application Deferred</a></li>
+                    <li><a href="~/_ad_pages/ad_page_3">Application Regret</a></li>
+                    <li><a href="~/_ad_pages/ad_page_4">Add user</a></li>
+                </ul>
+            </div>
+            <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+                <h3 class="page-header">@Page.Title</h3>
+                </div>
+                }
+
+
+
+
+
+
+            </div>
+
+
+    </div>
+          }
+          else
+          {
+              Response.Redirect("~/login");
+
+          }
+           
+
+}
+

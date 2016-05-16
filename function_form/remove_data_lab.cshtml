@@ -1,0 +1,13 @@
+﻿@{
+var db=Database.Open("Sym_db");    
+
+var id_user_fr_lb=Request["user_id_lab"];
+var row_to_del_fr_lb=Request["row_del_lab"];
+
+
+var delete_data_lab=db.Execute("DELETE FROM csir_lab_details WHERE uid_user=@0 AND row_no=@1",id_user_fr_lb,row_to_del_fr_lb);
+
+
+}
+
+
